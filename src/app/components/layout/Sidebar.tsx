@@ -3,7 +3,8 @@ import { useNavigate, useLocation } from "react-router";
 import {
   LayoutDashboard, Calendar, Users, UserCog, Scissors,
   Package, Tag, CreditCard, BarChart2, FileText, Settings,
-  ChevronLeft, ChevronRight, LogOut, Bell, Archive
+  ChevronLeft, ChevronRight, LogOut, Bell, Archive, UserCheck, UserX,
+  Eye, CheckCircle, Clock, XCircle, Loader
 } from "lucide-react";
 import { useApp, UserRole } from "../../context/AppContext";
 
@@ -17,20 +18,33 @@ interface NavItem {
 
 const adminNavItems: NavItem[] = [
   { label: "Dashboard", icon: <LayoutDashboard size={20} />, path: "/admin" },
-  { label: "Appointments", icon: <Calendar size={20} />, path: "/admin/appointments", badge: 12 },
+  { 
+    label: "Appointments", 
+    icon: <Calendar size={20} />, 
+    badge: 12,
+    children: [
+      { label: "View Appointments", icon: <Eye size={16} />, path: "/admin/appointments" },
+      { label: "Confirmed", icon: <CheckCircle size={16} />, path: "/admin/appointments?status=confirmed" },
+      { label: "In Progress", icon: <Loader size={16} />, path: "/admin/appointments?status=in-progress" },
+      { label: "Pending", icon: <Clock size={16} />, path: "/admin/appointments?status=pending" },
+      { label: "Cancelled", icon: <XCircle size={16} />, path: "/admin/appointments?status=cancelled" },
+    ]
+  },
   { 
     label: "Patients", 
     icon: <Users size={20} />, 
-    path: "/admin/patients",
     children: [
+      { label: "Active", icon: <UserCheck size={16} />, path: "/admin/patients?status=active" },
+      { label: "Inactive", icon: <UserX size={16} />, path: "/admin/patients?status=inactive" },
       { label: "Patients Archive", icon: <Archive size={16} />, path: "/admin/patients-archive" }
     ]
   },
   { 
     label: "Staff", 
     icon: <UserCog size={20} />, 
-    path: "/admin/staff",
     children: [
+      { label: "Active Staff", icon: <UserCheck size={16} />, path: "/admin/staff?status=active" },
+      { label: "Inactive Staff", icon: <UserX size={16} />, path: "/admin/staff?status=inactive" },
       { label: "Staff Archive", icon: <Archive size={16} />, path: "/admin/staff-archive" }
     ]
   },
@@ -78,9 +92,24 @@ export function Sidebar() {
 
   const isActive = (path?: string) => {
     if (!path) return false;
+    
+    // Handle paths with query parameters
+    if (path.includes("?")) {
+      const [pathPart, queryPart] = path.split("?");
+      const currentFullPath = location.pathname + location.search;
+      return currentFullPath === path || (location.pathname === pathPart && location.search === "?" + queryPart);
+    }
+    
     if (path === "/admin" || path === "/practitioner" || path === "/reception") {
       return location.pathname === path;
     }
+    
+    // For parent paths without query params, check if current path starts with it
+    // but also check that there's no query param filter active
+    if (location.search && location.pathname.startsWith(path)) {
+      return false; // A sub-item with query param is active, not the parent
+    }
+    
     return location.pathname.startsWith(path);
   };
 

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useSearchParams } from "react-router";
 import { Search, Plus, Pencil, Trash2, X } from "lucide-react";
 import { PageWrapper } from "../../components/layout/PageWrapper";
 import { StatusBadge } from "../../components/StatusBadge";
@@ -19,6 +20,8 @@ const roleColors: Record<string, { bg: string; text: string }> = {
 };
 
 export default function StaffPage() {
+  const [searchParams] = useSearchParams();
+  const statusFilter = searchParams.get("status") || "all";
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("All");
   const [showModal, setShowModal] = useState(false);
@@ -30,11 +33,27 @@ export default function StaffPage() {
   const [actionMenuOpen, setActionMenuOpen] = useState<string | null>(null);
 
   const filtered = staffList.filter((s) => {
+    // Filter out archived
+    if (s.archived) return false;
+    
+    // Apply status filter from URL
+    if (statusFilter !== "all" && s.status !== statusFilter) return false;
+    
+    // Apply search and role filters
     const matchSearch = s.name.toLowerCase().includes(search.toLowerCase()) ||
       s.email.toLowerCase().includes(search.toLowerCase());
     const matchRole = roleFilter === "All" || s.role === roleFilter.toLowerCase();
-    return !s.archived && matchSearch && matchRole;
+    return matchSearch && matchRole;
   });
+  
+  // Get page title based on status filter
+  const getPageTitle = () => {
+    switch (statusFilter) {
+      case "active": return "Active Staff";
+      case "inactive": return "Inactive Staff";
+      default: return "Staff";
+    }
+  };
 
   const handleArchiveStaff = (staffId: string) => {
     setConfirmAction({ type: "archive", staffId });
@@ -61,7 +80,7 @@ export default function StaffPage() {
   };
 
   return (
-    <PageWrapper title="Staff Management" breadcrumb="Admin / Staff">
+    <PageWrapper title={getPageTitle()} breadcrumb={`Admin / ${getPageTitle()}`}>
       {/* Toolbar */}
       <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px", flexWrap: "wrap" }}>
         <div style={{ position: "relative", flex: 1, maxWidth: "280px" }}>

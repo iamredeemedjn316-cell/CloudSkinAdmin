@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "react-router";
 import {
   Search, Filter, Download, Plus, Eye, Pencil, MoreVertical,
   ChevronLeft, ChevronRight, CalendarDays, List, X
@@ -57,12 +58,27 @@ const existingPatients = [
 ];
 
 export default function AppointmentsPage() {
+  const [searchParams] = useSearchParams();
+  const urlStatusFilter = searchParams.get("status");
   const [view, setView] = useState<"list" | "calendar">("list");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [showNewModal, setShowNewModal] = useState(false);
   const [page, setPage] = useState(1);
   const rowsPerPage = 10;
+  
+  // Sync URL status filter with local state
+  useEffect(() => {
+    if (urlStatusFilter) {
+      // Convert URL param to display format
+      const displayStatus = urlStatusFilter === "in-progress" 
+        ? "In Progress" 
+        : urlStatusFilter.charAt(0).toUpperCase() + urlStatusFilter.slice(1);
+      setStatusFilter(displayStatus);
+    } else {
+      setStatusFilter("All");
+    }
+  }, [urlStatusFilter]);
 
   const filtered = appointments.filter((a) => {
     const matchSearch = a.client.toLowerCase().includes(search.toLowerCase()) ||
@@ -71,12 +87,26 @@ export default function AppointmentsPage() {
       a.status.replace("-", " ") === statusFilter.toLowerCase();
     return matchSearch && matchStatus;
   });
+  
+  // Get page title based on status filter
+  const getPageTitle = () => {
+    if (urlStatusFilter) {
+      switch (urlStatusFilter) {
+        case "confirmed": return "Confirmed Appointments";
+        case "in-progress": return "In Progress Appointments";
+        case "pending": return "Pending Appointments";
+        case "cancelled": return "Cancelled Appointments";
+        default: return "Appointments";
+      }
+    }
+    return "Appointments";
+  };
 
   const totalPages = Math.ceil(filtered.length / rowsPerPage);
   const displayed = filtered.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
   return (
-    <PageWrapper title="Appointments" breadcrumb="Admin / Appointments">
+    <PageWrapper title={getPageTitle()} breadcrumb={`Admin / ${getPageTitle()}`}>
       {/* Tab Bar */}
       <div
         style={{

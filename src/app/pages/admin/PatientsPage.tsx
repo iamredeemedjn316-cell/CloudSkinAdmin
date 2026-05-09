@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import { Search, Plus, Eye, Pencil, MoreVertical, X, User, Calendar, CreditCard, Activity } from "lucide-react";
 import { PageWrapper } from "../../components/layout/PageWrapper";
 import { StatusBadge } from "../../components/StatusBadge";
@@ -44,6 +44,8 @@ const patientProfile = {
 
 export default function PatientsPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const statusFilter = searchParams.get("status") || "all";
   const [search, setSearch] = useState("");
   const [showNewModal, setShowNewModal] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<any>(null);
@@ -173,16 +175,32 @@ export default function PatientsPage() {
     setFormErrors({});
   };
 
-  const filtered = patientList.filter(
-    (p) =>
-      !p.archived &&
-      (p.name.toLowerCase().includes(search.toLowerCase()) ||
-        p.phone.includes(search) ||
-        p.email.toLowerCase().includes(search.toLowerCase()))
-  );
+  const filtered = patientList.filter((p) => {
+    // Filter out archived patients
+    if (p.archived) return false;
+    
+    // Apply status filter from URL
+    if (statusFilter !== "all" && p.status !== statusFilter) return false;
+    
+    // Apply search filter
+    return (
+      p.name.toLowerCase().includes(search.toLowerCase()) ||
+      p.phone.includes(search) ||
+      p.email.toLowerCase().includes(search.toLowerCase())
+    );
+  });
+  
+  // Get page title based on status filter
+  const getPageTitle = () => {
+    switch (statusFilter) {
+      case "active": return "Active Patients";
+      case "inactive": return "Inactive Patients";
+      default: return "Patients";
+    }
+  };
 
   return (
-    <PageWrapper title="Patients" breadcrumb="Admin / Patients">
+    <PageWrapper title={getPageTitle()} breadcrumb={`Admin / ${getPageTitle()}`}>
       {/* Toolbar */}
       <div
         style={{
