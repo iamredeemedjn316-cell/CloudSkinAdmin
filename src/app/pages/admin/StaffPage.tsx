@@ -4,12 +4,12 @@ import { PageWrapper } from "../../components/layout/PageWrapper";
 import { StatusBadge } from "../../components/StatusBadge";
 
 const staffMembers = [
-  { id: "S001", initials: "AU", color: "#2D6A9F", name: "Admin User", role: "admin", roleLabel: "Admin", email: "admin@cloudskin.com", phone: "+63 917-000-0001", specialty: "—", status: "active", dateAdded: "Jan 1, 2023" },
-  { id: "S002", initials: "MS", color: "#16A34A", name: "Dr. Maria Santos", role: "practitioner", roleLabel: "Practitioner", email: "m.santos@cloudskin.com", phone: "+63 917-100-0001", specialty: "Dermatology", status: "active", dateAdded: "Mar 1, 2024" },
-  { id: "S003", initials: "AR", color: "#7C3AED", name: "Dr. Ana Reyes", role: "practitioner", roleLabel: "Practitioner", email: "a.reyes@cloudskin.com", phone: "+63 918-200-0002", specialty: "Aesthetic Medicine", status: "active", dateAdded: "Jan 15, 2024" },
-  { id: "S004", initials: "JL", color: "#EA580C", name: "Dr. James Lim", role: "practitioner", roleLabel: "Practitioner", email: "j.lim@cloudskin.com", phone: "+63 919-300-0003", specialty: "Laser Specialist", status: "active", dateAdded: "Jun 1, 2023" },
-  { id: "S005", initials: "MG", color: "#0891B2", name: "Maria Gonzales", role: "receptionist", roleLabel: "Receptionist", email: "m.gonzales@cloudskin.com", phone: "+63 920-400-0004", specialty: "—", status: "active", dateAdded: "Feb 1, 2025" },
-  { id: "S006", initials: "JR", color: "#B45309", name: "Juan Rodriguez", role: "receptionist", roleLabel: "Receptionist", email: "j.rodriguez@cloudskin.com", phone: "+63 921-500-0005", specialty: "—", status: "inactive", dateAdded: "May 15, 2024" },
+  { id: "S001", initials: "AU", color: "#2D6A9F", name: "Admin User", role: "admin", roleLabel: "Admin", email: "admin@cloudskin.com", phone: "+63 917-000-0001", specialty: "—", status: "active", dateAdded: "Jan 1, 2023", dob: "May 15, 1985", archived: false },
+  { id: "S002", initials: "MS", color: "#16A34A", name: "Dr. Maria Santos", role: "practitioner", roleLabel: "Practitioner", email: "m.santos@cloudskin.com", phone: "+63 917-100-0001", specialty: "Dermatology", status: "active", dateAdded: "Mar 1, 2024", dob: "Aug 22, 1988", archived: false },
+  { id: "S003", initials: "AR", color: "#7C3AED", name: "Dr. Ana Reyes", role: "practitioner", roleLabel: "Practitioner", email: "a.reyes@cloudskin.com", phone: "+63 918-200-0002", specialty: "Aesthetic Medicine", status: "active", dateAdded: "Jan 15, 2024", dob: "Nov 10, 1990", archived: false },
+  { id: "S004", initials: "JL", color: "#EA580C", name: "Dr. James Lim", role: "practitioner", roleLabel: "Practitioner", email: "j.lim@cloudskin.com", phone: "+63 919-300-0003", specialty: "Laser Specialist", status: "active", dateAdded: "Jun 1, 2023", dob: "Feb 28, 1987", archived: false },
+  { id: "S005", initials: "MG", color: "#0891B2", name: "Maria Gonzales", role: "receptionist", roleLabel: "Receptionist", email: "m.gonzales@cloudskin.com", phone: "+63 920-400-0004", specialty: "—", status: "active", dateAdded: "Feb 1, 2025", dob: "Jul 5, 1995", archived: false },
+  { id: "S006", initials: "JR", color: "#B45309", name: "Juan Rodriguez", role: "receptionist", roleLabel: "Receptionist", email: "j.rodriguez@cloudskin.com", phone: "+63 921-500-0005", specialty: "—", status: "inactive", dateAdded: "May 15, 2024", dob: "Sep 18, 1992", archived: false },
 ];
 
 const roleColors: Record<string, { bg: string; text: string }> = {
@@ -24,13 +24,41 @@ export default function StaffPage() {
   const [showModal, setShowModal] = useState(false);
   const [editingStaff, setEditingStaff] = useState<any>(null);
   const [selectedRole, setSelectedRole] = useState<"admin" | "practitioner" | "receptionist">("practitioner");
+  const [staffList, setStaffList] = useState(staffMembers);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<{ type: "archive" | "delete"; staffId: string } | null>(null);
+  const [actionMenuOpen, setActionMenuOpen] = useState<string | null>(null);
 
-  const filtered = staffMembers.filter((s) => {
+  const filtered = staffList.filter((s) => {
     const matchSearch = s.name.toLowerCase().includes(search.toLowerCase()) ||
       s.email.toLowerCase().includes(search.toLowerCase());
     const matchRole = roleFilter === "All" || s.role === roleFilter.toLowerCase();
-    return matchSearch && matchRole;
+    return !s.archived && matchSearch && matchRole;
   });
+
+  const handleArchiveStaff = (staffId: string) => {
+    setConfirmAction({ type: "archive", staffId });
+    setShowConfirmModal(true);
+  };
+
+  const handleDeleteStaff = (staffId: string) => {
+    setConfirmAction({ type: "delete", staffId });
+    setShowConfirmModal(true);
+  };
+
+  const confirmActionHandler = () => {
+    if (!confirmAction) return;
+
+    if (confirmAction.type === "archive") {
+      setStaffList(staffList.map((s) => (s.id === confirmAction.staffId ? { ...s, archived: true } : s)));
+    } else if (confirmAction.type === "delete") {
+      setStaffList(staffList.filter((s) => s.id !== confirmAction.staffId));
+    }
+
+    setShowConfirmModal(false);
+    setConfirmAction(null);
+    setActionMenuOpen(null);
+  };
 
   return (
     <PageWrapper title="Staff Management" breadcrumb="Admin / Staff">
@@ -122,13 +150,28 @@ export default function StaffPage() {
                   <td style={{ padding: "12px 16px" }}><StatusBadge status={s.status as any} /></td>
                   <td style={{ padding: "12px 16px" }}><span style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#5A7A96" }}>{s.dateAdded}</span></td>
                   <td style={{ padding: "12px 16px" }}>
-                    <div style={{ display: "flex", gap: "6px" }}>
+                    <div style={{ display: "flex", gap: "6px", position: "relative" }}>
                       <button onClick={() => { setEditingStaff(s); setShowModal(true); }} style={{ width: "28px", height: "28px", background: "#F0F6FC", border: "none", borderRadius: "6px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#5A7A96" }} title="Edit">
                         <Pencil size={13} />
                       </button>
-                      <button style={{ width: "28px", height: "28px", background: "#FEF2F2", border: "none", borderRadius: "6px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#DC2626" }} title="Remove">
-                        <Trash2 size={13} />
-                      </button>
+                      <div style={{ position: "relative" }}>
+                        <button 
+                          onClick={() => setActionMenuOpen(actionMenuOpen === s.id ? null : s.id)}
+                          style={{ width: "28px", height: "28px", background: "#FEF2F2", border: "none", borderRadius: "6px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#DC2626" }} 
+                          title="More">
+                          <Trash2 size={13} />
+                        </button>
+                        {actionMenuOpen === s.id && (
+                          <div style={{ position: "absolute", top: "100%", right: 0, background: "#FFFFFF", border: "1px solid #D0E8F5", borderRadius: "8px", boxShadow: "0 4px 12px rgba(26,58,92,0.15)", zIndex: 50, minWidth: "140px", marginTop: "4px" }}>
+                            <button onClick={() => { handleArchiveStaff(s.id); }} style={{ width: "100%", padding: "10px 16px", background: "none", border: "none", textAlign: "left", cursor: "pointer", fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#F97316", borderBottom: "1px solid #F0F6FC" }} onMouseEnter={(e) => (e.currentTarget.style.background = "#F8FBFF")} onMouseLeave={(e) => (e.currentTarget.style.background = "none")}>
+                              Archive
+                            </button>
+                            <button onClick={() => { handleDeleteStaff(s.id); }} style={{ width: "100%", padding: "10px 16px", background: "none", border: "none", textAlign: "left", cursor: "pointer", fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#EF4444" }} onMouseEnter={(e) => (e.currentTarget.style.background = "#F8FBFF")} onMouseLeave={(e) => (e.currentTarget.style.background = "none")}>
+                              Delete
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </td>
                 </tr>
@@ -154,10 +197,11 @@ export default function StaffPage() {
                   { label: "Full Name", placeholder: editingStaff?.name || "e.g. Dr. Maria Santos" },
                   { label: "Email Address", placeholder: editingStaff?.email || "staff@cloudskin.com" },
                   { label: "Phone Number", placeholder: editingStaff?.phone || "+63 9XX-XXX-XXXX" },
+                  { label: "Date of Birth", placeholder: editingStaff?.dob || "Jan 1, 1990", type: "text" },
                 ].map((f) => (
                   <div key={f.label}>
                     <label style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "#1A2E40", marginBottom: "6px" }}>{f.label}</label>
-                    <input placeholder={f.placeholder} style={{ width: "100%", height: "40px", border: "1.5px solid #D0E8F5", borderRadius: "8px", padding: "0 12px", fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#1A2E40", outline: "none", boxSizing: "border-box" }} />
+                    <input type={f.type || "text"} placeholder={f.placeholder} style={{ width: "100%", height: "40px", border: "1.5px solid #D0E8F5", borderRadius: "8px", padding: "0 12px", fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#1A2E40", outline: "none", boxSizing: "border-box" }} />
                   </div>
                 ))}
               </div>
@@ -200,6 +244,33 @@ export default function StaffPage() {
               <button onClick={() => setShowModal(false)} style={{ height: "38px", padding: "0 20px", background: "none", border: "1.5px solid #D0E8F5", borderRadius: "8px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "14px", color: "#5A7A96" }}>Cancel</button>
               <button style={{ height: "38px", padding: "0 20px", background: "#2D6A9F", border: "none", borderRadius: "8px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "14px", fontWeight: 600, color: "#FFFFFF" }}>
                 {editingStaff ? "Save Changes" : "Save Staff Account"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirmation Modal */}
+      {showConfirmModal && confirmAction && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(26,58,92,0.5)", backdropFilter: "blur(4px)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", padding: "24px" }} onClick={() => setShowConfirmModal(false)}>
+          <div style={{ background: "#FFFFFF", borderRadius: "16px", width: "100%", maxWidth: "400px", boxShadow: "0 8px 32px rgba(26,58,92,0.18)", overflow: "hidden" }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ padding: "24px", textAlign: "center" }}>
+              <div style={{ background: confirmAction.type === "delete" ? "#FEE2E2" : "#FEF3C7", width: "60px", height: "60px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
+                <Trash2 size={28} color={confirmAction.type === "delete" ? "#EF4444" : "#F97316"} />
+              </div>
+              <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "16px", color: "#1A2E40", marginBottom: "8px" }}>
+                {confirmAction.type === "delete" ? "Delete Staff Member?" : "Archive Staff Member?"}
+              </div>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#5A7A96", marginBottom: "24px" }}>
+                {confirmAction.type === "delete" 
+                  ? "This action cannot be undone. The staff member will be permanently deleted." 
+                  : "This staff member will be moved to the archive. You can restore them later."}
+              </div>
+            </div>
+            <div style={{ padding: "16px 24px", borderTop: "1px solid #D0E8F5", display: "flex", justifyContent: "flex-end", gap: "10px" }}>
+              <button onClick={() => setShowConfirmModal(false)} style={{ height: "38px", padding: "0 20px", background: "none", border: "1.5px solid #D0E8F5", borderRadius: "8px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "14px", color: "#5A7A96" }}>Cancel</button>
+              <button onClick={confirmActionHandler} style={{ height: "38px", padding: "0 20px", background: confirmAction.type === "delete" ? "#EF4444" : "#F97316", border: "none", borderRadius: "8px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "14px", fontWeight: 600, color: "#FFFFFF" }}>
+                {confirmAction.type === "delete" ? "Delete" : "Archive"}
               </button>
             </div>
           </div>
