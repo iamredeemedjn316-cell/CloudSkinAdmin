@@ -21,24 +21,40 @@ interface Appointment {
   paymentMethod: StatusType;
   amount: string;
   paymentStatus: StatusType;
+  type: "online" | "f2f";
+  isExistingClient: boolean;
+  bookedBy?: "admin" | "receptionist" | "patient";
 }
 
 const appointments: Appointment[] = [
-  { id: 1001, client: "Sarah Johnson", clientPhone: "0917-123-4567", clientInitials: "SJ", clientColor: "#2D6A9F", service: "Hydra Facial", duration: "60 min", date: "Apr 25, 2026", time: "10:00 AM", practitioner: "Dr. Santos", status: "confirmed", paymentMethod: "gcash", amount: "₱2,500", paymentStatus: "paid" },
-  { id: 1002, client: "Miguel Cruz", clientPhone: "0918-234-5678", clientInitials: "MC", clientColor: "#16A34A", service: "Botox Treatment", duration: "45 min", date: "Apr 25, 2026", time: "11:00 AM", practitioner: "Dr. Reyes", status: "in-progress", paymentMethod: "cash", amount: "₱8,000", paymentStatus: "paid" },
-  { id: 1003, client: "Camille Torres", clientPhone: "0919-345-6789", clientInitials: "CT", clientColor: "#7C3AED", service: "Chemical Peel", duration: "45 min", date: "Apr 25, 2026", time: "1:00 PM", practitioner: "Dr. Santos", status: "pending", paymentMethod: "gcash", amount: "₱3,500", paymentStatus: "unpaid" },
-  { id: 1004, client: "Jose Dela Cruz", clientPhone: "0920-456-7890", clientInitials: "JD", clientColor: "#EA580C", service: "PRP Therapy", duration: "90 min", date: "Apr 25, 2026", time: "2:30 PM", practitioner: "Dr. Lim", status: "confirmed", paymentMethod: "card", amount: "₱12,000", paymentStatus: "paid" },
-  { id: 1005, client: "Angela Park", clientPhone: "0921-567-8901", clientInitials: "AP", clientColor: "#0891B2", service: "LED Therapy", duration: "30 min", date: "Apr 25, 2026", time: "3:30 PM", practitioner: "Dr. Reyes", status: "confirmed", paymentMethod: "cash", amount: "₱1,800", paymentStatus: "paid" },
-  { id: 1006, client: "Roberto Tan", clientPhone: "0922-678-9012", clientInitials: "RT", clientColor: "#B45309", service: "Microneedling", duration: "60 min", date: "Apr 26, 2026", time: "9:00 AM", practitioner: "Dr. Santos", status: "pending", paymentMethod: "gcash", amount: "₱4,500", paymentStatus: "unpaid" },
-  { id: 1007, client: "Lisa Gomez", clientPhone: "0923-789-0123", clientInitials: "LG", clientColor: "#9D174D", service: "Laser Resurfacing", duration: "90 min", date: "Apr 26, 2026", time: "10:30 AM", practitioner: "Dr. Lim", status: "confirmed", paymentMethod: "card", amount: "₱15,000", paymentStatus: "paid" },
-  { id: 1008, client: "Kevin Bautista", clientPhone: "0924-890-1234", clientInitials: "KB", clientColor: "#065F46", service: "Acne Treatment", duration: "45 min", date: "Apr 26, 2026", time: "11:30 AM", practitioner: "Dr. Reyes", status: "confirmed", paymentMethod: "cash", amount: "₱2,800", paymentStatus: "paid" },
-  { id: 1009, client: "Diana Reyes", clientPhone: "0925-901-2345", clientInitials: "DR", clientColor: "#6B21A8", service: "Dermal Fillers", duration: "60 min", date: "Apr 27, 2026", time: "10:00 AM", practitioner: "Dr. Santos", status: "cancelled", paymentMethod: "gcash", amount: "₱18,000", paymentStatus: "unpaid" },
-  { id: 1010, client: "Marco Villanueva", clientPhone: "0926-012-3456", clientInitials: "MV", clientColor: "#0C4A6E", service: "IV Drip Wellness", duration: "60 min", date: "Apr 27, 2026", time: "2:00 PM", practitioner: "Dr. Lim", status: "completed", paymentMethod: "transfer", amount: "₱3,500", paymentStatus: "paid" },
-  { id: 1011, client: "Patricia Santos", clientPhone: "0927-123-4567", clientInitials: "PS", clientColor: "#14532D", service: "Hydra Facial", duration: "60 min", date: "Apr 28, 2026", time: "9:30 AM", practitioner: "Dr. Santos", status: "confirmed", paymentMethod: "cash", amount: "₱2,500", paymentStatus: "paid" },
-  { id: 1012, client: "Antonio Garcia", clientPhone: "0928-234-5678", clientInitials: "AG", clientColor: "#7F1D1D", service: "PRP Hair Therapy", duration: "90 min", date: "Apr 28, 2026", time: "11:00 AM", practitioner: "Dr. Lim", status: "pending", paymentMethod: "gcash", amount: "₱12,000", paymentStatus: "unpaid" },
+  { id: 1001, client: "Sarah Johnson", clientPhone: "0917-123-4567", clientInitials: "SJ", clientColor: "#2D6A9F", service: "Hydra Facial", duration: "60 min", date: "Apr 25, 2026", time: "10:00 AM", practitioner: "Dr. Santos", status: "confirmed", paymentMethod: "gcash", amount: "₱2,500", paymentStatus: "paid", type: "f2f", isExistingClient: true, bookedBy: "receptionist" },
+  { id: 1002, client: "Miguel Cruz", clientPhone: "0918-234-5678", clientInitials: "MC", clientColor: "#16A34A", service: "Botox Treatment", duration: "45 min", date: "Apr 25, 2026", time: "11:00 AM", practitioner: "Dr. Reyes", status: "in-progress", paymentMethod: "cash", amount: "₱8,000", paymentStatus: "paid", type: "f2f", isExistingClient: true, bookedBy: "admin" },
+  { id: 1003, client: "Camille Torres", clientPhone: "0919-345-6789", clientInitials: "CT", clientColor: "#7C3AED", service: "Chemical Peel", duration: "45 min", date: "Apr 25, 2026", time: "1:00 PM", practitioner: "Dr. Santos", status: "pending", paymentMethod: "gcash", amount: "₱3,500", paymentStatus: "unpaid", type: "online", isExistingClient: false, bookedBy: "patient" },
+  { id: 1004, client: "Jose Dela Cruz", clientPhone: "0920-456-7890", clientInitials: "JD", clientColor: "#EA580C", service: "PRP Therapy", duration: "90 min", date: "Apr 25, 2026", time: "2:30 PM", practitioner: "Dr. Lim", status: "confirmed", paymentMethod: "card", amount: "₱12,000", paymentStatus: "paid", type: "f2f", isExistingClient: true, bookedBy: "admin" },
+  { id: 1005, client: "Angela Park", clientPhone: "0921-567-8901", clientInitials: "AP", clientColor: "#0891B2", service: "LED Therapy", duration: "30 min", date: "Apr 25, 2026", time: "3:30 PM", practitioner: "Dr. Reyes", status: "confirmed", paymentMethod: "cash", amount: "₱1,800", paymentStatus: "paid", type: "online", isExistingClient: true, bookedBy: "patient" },
+  { id: 1006, client: "Roberto Tan", clientPhone: "0922-678-9012", clientInitials: "RT", clientColor: "#B45309", service: "Microneedling", duration: "60 min", date: "Apr 26, 2026", time: "9:00 AM", practitioner: "Dr. Santos", status: "pending", paymentMethod: "gcash", amount: "₱4,500", paymentStatus: "unpaid", type: "f2f", isExistingClient: true, bookedBy: "receptionist" },
+  { id: 1007, client: "Lisa Gomez", clientPhone: "0923-789-0123", clientInitials: "LG", clientColor: "#9D174D", service: "Laser Resurfacing", duration: "90 min", date: "Apr 26, 2026", time: "10:30 AM", practitioner: "Dr. Lim", status: "confirmed", paymentMethod: "card", amount: "₱15,000", paymentStatus: "paid", type: "f2f", isExistingClient: true, bookedBy: "admin" },
+  { id: 1008, client: "Kevin Bautista", clientPhone: "0924-890-1234", clientInitials: "KB", clientColor: "#065F46", service: "Acne Treatment", duration: "45 min", date: "Apr 26, 2026", time: "11:30 AM", practitioner: "Dr. Reyes", status: "confirmed", paymentMethod: "cash", amount: "₱2,800", paymentStatus: "paid", type: "online", isExistingClient: false, bookedBy: "patient" },
+  { id: 1009, client: "Diana Reyes", clientPhone: "0925-901-2345", clientInitials: "DR", clientColor: "#6B21A8", service: "Dermal Fillers", duration: "60 min", date: "Apr 27, 2026", time: "10:00 AM", practitioner: "Dr. Santos", status: "cancelled", paymentMethod: "gcash", amount: "₱18,000", paymentStatus: "unpaid", type: "f2f", isExistingClient: true, bookedBy: "admin" },
+  { id: 1010, client: "Marco Villanueva", clientPhone: "0926-012-3456", clientInitials: "MV", clientColor: "#0C4A6E", service: "IV Drip Wellness", duration: "60 min", date: "Apr 27, 2026", time: "2:00 PM", practitioner: "Dr. Lim", status: "completed", paymentMethod: "transfer", amount: "₱3,500", paymentStatus: "paid", type: "f2f", isExistingClient: true, bookedBy: "receptionist" },
+  { id: 1011, client: "Patricia Santos", clientPhone: "0927-123-4567", clientInitials: "PS", clientColor: "#14532D", service: "Hydra Facial", duration: "60 min", date: "Apr 28, 2026", time: "9:30 AM", practitioner: "Dr. Santos", status: "confirmed", paymentMethod: "cash", amount: "₱2,500", paymentStatus: "paid", type: "f2f", isExistingClient: true, bookedBy: "admin" },
+  { id: 1012, client: "Antonio Garcia", clientPhone: "0928-234-5678", clientInitials: "AG", clientColor: "#7F1D1D", service: "PRP Hair Therapy", duration: "90 min", date: "Apr 28, 2026", time: "11:00 AM", practitioner: "Dr. Lim", status: "pending", paymentMethod: "gcash", amount: "₱12,000", paymentStatus: "unpaid", type: "online", isExistingClient: false, bookedBy: "patient" },
 ];
 
 const statusOptions = ["All", "Confirmed", "Pending", "In Progress", "Completed", "Cancelled", "No Show"];
+
+// Sample existing patients for client lookup
+const existingPatients = [
+  { id: "p1", name: "Sarah Johnson", initials: "SJ", color: "#2D6A9F" },
+  { id: "p2", name: "Miguel Cruz", initials: "MC", color: "#16A34A" },
+  { id: "p3", name: "Jose Dela Cruz", initials: "JD", color: "#EA580C" },
+  { id: "p4", name: "Angela Park", initials: "AP", color: "#0891B2" },
+  { id: "p5", name: "Roberto Tan", initials: "RT", color: "#B45309" },
+  { id: "p6", name: "Lisa Gomez", initials: "LG", color: "#9D174D" },
+  { id: "p7", name: "Diana Reyes", initials: "DR", color: "#6B21A8" },
+  { id: "p8", name: "Marco Villanueva", initials: "MV", color: "#0C4A6E" },
+  { id: "p9", name: "Patricia Santos", initials: "PS", color: "#14532D" },
+];
 
 export default function AppointmentsPage() {
   const [view, setView] = useState<"list" | "calendar">("list");
@@ -234,7 +250,7 @@ export default function AppointmentsPage() {
             <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "900px" }}>
               <thead>
                 <tr style={{ background: "#F0F6FC" }}>
-                  {["#", "Client", "Service", "Date & Time", "Practitioner", "Status", "Payment", "Actions"].map((h) => (
+                  {["#", "Client", "Service", "Date & Time", "Type", "Practitioner", "Status", "Payment", "Actions"].map((h) => (
                     <th
                       key={h}
                       style={{
@@ -318,6 +334,29 @@ export default function AppointmentsPage() {
                     <td style={{ padding: "12px 16px" }}>
                       <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "#1A2E40" }}>{apt.date}</div>
                       <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "#5A7A96" }}>{apt.time}</div>
+                    </td>
+                    <td style={{ padding: "12px 16px" }}>
+                      <div
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "4px",
+                          background: apt.type === "f2f" ? "#EFF6FF" : "#F0FDF4",
+                          color: apt.type === "f2f" ? "#1E40AF" : "#16A34A",
+                          padding: "4px 10px",
+                          borderRadius: "6px",
+                          fontSize: "12px",
+                          fontFamily: "'DM Sans', sans-serif",
+                          fontWeight: 500,
+                        }}
+                      >
+                        <span>{apt.type === "f2f" ? "F2F" : "Online"}</span>
+                        {apt.isExistingClient && (
+                          <span style={{ fontSize: "10px", opacity: 0.7 }}>
+                            {apt.type === "f2f" ? "📍" : "💬"}
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td style={{ padding: "12px 16px" }}>
                       <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#5A7A96" }}>{apt.practitioner}</span>
@@ -683,18 +722,31 @@ function CalendarView() {
 }
 
 function NewAppointmentModal({ onClose }: { onClose: () => void }) {
+  const [appointmentType, setAppointmentType] = useState<"online" | "f2f">("f2f");
+  const [selectedClient, setSelectedClient] = useState<any>(null);
+  const [clientSearch, setClientSearch] = useState("");
+  const [showClientDropdown, setShowClientDropdown] = useState(false);
+
+  const filteredPatients = existingPatients.filter(p =>
+    p.name.toLowerCase().includes(clientSearch.toLowerCase())
+  );
+
+  const handleClientSelect = (patient: any) => {
+    setSelectedClient(patient);
+    setClientSearch(patient.name);
+    setShowClientDropdown(false);
+  };
+
   return (
     <div
       style={{
         position: "fixed",
         inset: 0,
-        background: "rgba(26,58,92,0.5)",
-        backdropFilter: "blur(4px)",
-        zIndex: 100,
+        background: "rgba(26, 46, 64, 0.35)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: "24px",
+        zIndex: 1000,
       }}
       onClick={onClose}
     >
@@ -716,8 +768,144 @@ function NewAppointmentModal({ onClose }: { onClose: () => void }) {
           </button>
         </div>
         <div style={{ padding: "24px" }}>
+          {/* Appointment Type Selection */}
+          <div style={{ marginBottom: "20px" }}>
+            <label style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "#1A2E40", marginBottom: "10px" }}>
+              Appointment Type
+            </label>
+            <div style={{ display: "flex", gap: "12px" }}>
+              {[
+                { value: "f2f" as const, label: "Face-to-Face", icon: "📍" },
+                { value: "online" as const, label: "Online", icon: "💻" },
+              ].map((type) => (
+                <button
+                  key={type.value}
+                  onClick={() => setAppointmentType(type.value)}
+                  style={{
+                    flex: 1,
+                    height: "44px",
+                    border: appointmentType === type.value ? "2px solid #2D6A9F" : "1.5px solid #D0E8F5",
+                    borderRadius: "8px",
+                    background: appointmentType === type.value ? "#EFF6FF" : "#FFFFFF",
+                    cursor: "pointer",
+                    fontFamily: "'DM Sans', sans-serif",
+                    fontSize: "13px",
+                    fontWeight: appointmentType === type.value ? 600 : 500,
+                    color: appointmentType === type.value ? "#2D6A9F" : "#5A7A96",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "6px",
+                    transition: "all 150ms",
+                  }}
+                >
+                  <span>{type.icon}</span>
+                  {type.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Client Search - Existing or New */}
+          <div style={{ marginBottom: "16px", position: "relative" }}>
+            <label style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "#1A2E40", marginBottom: "6px" }}>
+              Client {selectedClient && <span style={{ fontSize: "11px", color: "#16A34A" }}>(Existing Client)</span>}
+            </label>
+            <input
+              type="text"
+              placeholder="Search existing client or enter new name..."
+              value={clientSearch}
+              onChange={(e) => {
+                setClientSearch(e.target.value);
+                setShowClientDropdown(true);
+              }}
+              onFocus={() => setShowClientDropdown(true)}
+              style={{
+                width: "100%",
+                height: "40px",
+                border: "1.5px solid #D0E8F5",
+                borderRadius: "8px",
+                padding: "0 12px",
+                fontFamily: "'Inter', sans-serif",
+                fontSize: "13px",
+                color: "#1A2E40",
+                outline: "none",
+                boxSizing: "border-box",
+                background: selectedClient ? "#F0FDF4" : "#FFFFFF",
+              }}
+            />
+            {showClientDropdown && clientSearch.length > 0 && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "100%",
+                  left: 0,
+                  right: 0,
+                  background: "#FFFFFF",
+                  border: "1.5px solid #D0E8F5",
+                  borderTop: "none",
+                  borderRadius: "0 0 8px 8px",
+                  maxHeight: "200px",
+                  overflowY: "auto",
+                  zIndex: 10,
+                }}
+              >
+                {filteredPatients.length > 0 ? (
+                  filteredPatients.map((patient) => (
+                    <button
+                      key={patient.id}
+                      onClick={() => handleClientSelect(patient)}
+                      style={{
+                        width: "100%",
+                        padding: "10px 12px",
+                        background: "none",
+                        border: "none",
+                        borderBottom: "1px solid #EBF6FD",
+                        textAlign: "left",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px",
+                        fontFamily: "'Inter', sans-serif",
+                        fontSize: "13px",
+                        color: "#1A2E40",
+                        transition: "background 150ms",
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = "#F8FBFF")}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
+                    >
+                      <div
+                        style={{
+                          width: "28px",
+                          height: "28px",
+                          borderRadius: "50%",
+                          background: patient.color,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontFamily: "'DM Sans', sans-serif",
+                          fontWeight: 600,
+                          fontSize: "10px",
+                          color: "#FFFFFF",
+                          flexShrink: 0,
+                        }}
+                      >
+                        {patient.initials}
+                      </div>
+                      {patient.name}
+                    </button>
+                  ))
+                ) : (
+                  <div style={{ padding: "10px 12px", color: "#9BBAD4", fontSize: "12px" }}>
+                    No existing clients found. This will be a new client.
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Other Fields */}
           {[
-            { label: "Client", type: "text", placeholder: "Search client name..." },
             { label: "Service", type: "text", placeholder: "Select service..." },
             { label: "Practitioner", type: "text", placeholder: "Select practitioner..." },
             { label: "Date", type: "date", placeholder: "" },
