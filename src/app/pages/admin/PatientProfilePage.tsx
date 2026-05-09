@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router";
-import { ArrowLeft, Calendar, Activity, User, CreditCard, Pencil, Plus, ChevronDown, MapPin, Phone, Mail } from "lucide-react";
+import { ArrowLeft, Calendar, Activity, User, CreditCard, Pencil, Plus, ChevronDown, MapPin, Phone, Mail, X } from "lucide-react";
 import { PageWrapper } from "../../components/layout/PageWrapper";
 import { StatusBadge } from "../../components/StatusBadge";
 
@@ -35,7 +35,37 @@ const patientsDatabase = [
       { id: "S003", name: "Chemical Peel", description: "Professional skin exfoliation", lastAvailed: "Feb 10, 2026", frequency: "Quarterly", status: "active" },
     ],
     packages: [
-      { id: "PKG001", name: "Premium Facial Package", value: "PHP 15,000", sessionsRemaining: 3, totalSessions: 5, expiryDate: "Dec 31, 2026", status: "active" },
+      { 
+        id: "PKG001", 
+        name: "Premium Facial Package", 
+        value: "PHP 15,000", 
+        sessionsRemaining: 3, 
+        totalSessions: 5, 
+        expiryDate: "Dec 31, 2026", 
+        status: "active",
+        sessions: [
+          { number: 1, date: "Feb 10, 2026", service: "Hydra Facial", practitioner: "Dr. Santos", status: "completed", remarks: "Excellent skin response. Continue with regular hydration." },
+          { number: 2, date: "Feb 24, 2026", service: "Chemical Peel", practitioner: "Dr. Reyes", status: "completed", remarks: "Good exfoliation. Minimal irritation. Healing progressing well." },
+          { number: 3, date: "Mar 10, 2026", service: "Microneedling", practitioner: "Dr. Santos", status: "completed", remarks: "Visible improvement in skin texture. Minor redness expected." },
+          { number: 4, date: "Mar 24, 2026", service: "LED Therapy", practitioner: "Dr. Lim", status: "pending", remarks: "" },
+          { number: 5, date: "Apr 7, 2026", service: "Hydra Facial", practitioner: "Dr. Reyes", status: "pending", remarks: "" },
+        ]
+      },
+      { 
+        id: "PKG002", 
+        name: "Anti-Aging Package", 
+        value: "PHP 12,000", 
+        sessionsRemaining: 0, 
+        totalSessions: 4, 
+        expiryDate: "Jan 31, 2026", 
+        status: "completed",
+        sessions: [
+          { number: 1, date: "Oct 15, 2025", service: "PRP Therapy", practitioner: "Dr. Santos", status: "completed", remarks: "Patient responded well. Visible collagen stimulation." },
+          { number: 2, date: "Nov 5, 2025", service: "Dermal Fillers", practitioner: "Dr. Reyes", status: "completed", remarks: "1ml filler applied to nasolabial folds. Natural results achieved." },
+          { number: 3, date: "Nov 25, 2025", service: "Microneedling", practitioner: "Dr. Lim", status: "completed", remarks: "Depth 1.5mm. Patient compliance excellent. Good results." },
+          { number: 4, date: "Dec 15, 2025", service: "Laser Resurfacing", practitioner: "Dr. Santos", status: "completed", remarks: "Fine lines significantly reduced. Skin texture improved." },
+        ]
+      },
     ],
   },
 ];
@@ -45,8 +75,17 @@ export default function PatientProfilePage() {
   const navigate = useNavigate();
   const [profileTab, setProfileTab] = useState("overview");
   const [expandedService, setExpandedService] = useState<string | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [expandedPackage, setExpandedPackage] = useState<string | null>(null);
+  const [editData, setEditData] = useState<any>(null);
+  const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
 
-  const patient = patientsDatabase.find((p) => p.id === patientId);
+  let patient = patientsDatabase.find((p) => p.id === patientId);
+  
+  // Update patient data if editing
+  if (editData && patient && patient.id === editData.id) {
+    patient = editData;
+  }
 
   if (!patient) {
     return (
@@ -147,6 +186,10 @@ export default function PatientProfilePage() {
                 </div>
               </div>
               <button
+                onClick={() => {
+                  setEditData(patient);
+                  setShowEditModal(true);
+                }}
                 style={{
                   padding: "8px 16px",
                   background: "#2D6A9F",
@@ -195,7 +238,7 @@ export default function PatientProfilePage() {
             }}
           >
             <div style={{ borderBottom: "1px solid #D0E8F5", display: "flex", overflowX: "auto" }}>
-              {["overview", "services", "appointments", "skin"].map((tab) => (
+              {["overview", "services", "packages", "appointments", "skin"].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setProfileTab(tab)}
@@ -347,6 +390,140 @@ export default function PatientProfilePage() {
                 </div>
               )}
 
+              {/* Packages Tab */}
+              {profileTab === "packages" && (
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                  {patient.packages.length > 0 ? (
+                    patient.packages.map((pkg: any) => (
+                      <div
+                        key={pkg.id}
+                        style={{
+                          border: "1px solid #D0E8F5",
+                          borderRadius: "10px",
+                          overflow: "hidden",
+                          background: expandedPackage === pkg.id ? "#F8FBFF" : "#FFFFFF",
+                        }}
+                      >
+                        <button
+                          onClick={() => setExpandedPackage(expandedPackage === pkg.id ? null : pkg.id)}
+                          style={{
+                            width: "100%",
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                            padding: "16px",
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            borderBottom: expandedPackage === pkg.id ? "1px solid #D0E8F5" : "none",
+                          }}
+                        >
+                          <div style={{ textAlign: "left" }}>
+                            <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#1A2E40", marginBottom: "4px" }}>
+                              {pkg.name}
+                            </div>
+                            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "#5A7A96", display: "flex", gap: "16px" }}>
+                              <span>Value: {pkg.value}</span>
+                              <span>
+                                {pkg.status === "active"
+                                  ? `${pkg.sessionsRemaining}/${pkg.totalSessions} sessions remaining`
+                                  : "Completed"}
+                              </span>
+                            </div>
+                          </div>
+                          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                            <div
+                              style={{
+                                background: pkg.status === "active" ? "#EFF6FF" : "#F0FDF4",
+                                color: pkg.status === "active" ? "#1E40AF" : "#16A34A",
+                                padding: "4px 10px",
+                                borderRadius: "6px",
+                                fontSize: "11px",
+                                fontFamily: "'DM Sans', sans-serif",
+                                fontWeight: 500,
+                              }}
+                            >
+                              {pkg.status === "active" ? "Active" : "Completed"}
+                            </div>
+                            <ChevronDown size={16} style={{ color: "#5A7A96", transform: expandedPackage === pkg.id ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }} />
+                          </div>
+                        </button>
+
+                        {expandedPackage === pkg.id && (
+                          <div style={{ padding: "16px", background: "#FFFFFF" }}>
+                            <div style={{ marginBottom: "20px" }}>
+                              <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", fontWeight: 600, color: "#5A7A96", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "12px" }}>
+                                Sessions
+                              </div>
+                              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                                {pkg.sessions && pkg.sessions.map((session: any, idx: number) => (
+                                  <div key={idx} style={{ padding: "12px", background: "#F8FBFF", borderRadius: "8px", border: "1px solid #D0E8F5" }}>
+                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: "8px" }}>
+                                      <div>
+                                        <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#1A2E40", marginBottom: "2px" }}>
+                                          Session {session.number}: {session.service}
+                                        </div>
+                                        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "#5A7A96" }}>
+                                          {session.date} • {session.practitioner}
+                                        </div>
+                                      </div>
+                                      <div
+                                        style={{
+                                          background: session.status === "completed" ? "#D1FAE5" : "#FEF3C7",
+                                          color: session.status === "completed" ? "#065F46" : "#92400E",
+                                          padding: "4px 8px",
+                                          borderRadius: "4px",
+                                          fontSize: "11px",
+                                          fontFamily: "'DM Sans', sans-serif",
+                                          fontWeight: 500,
+                                          whiteSpace: "nowrap",
+                                        }}
+                                      >
+                                        {session.status === "completed" ? "✓ Done" : "Pending"}
+                                      </div>
+                                    </div>
+                                    {session.remarks && (
+                                      <div style={{ background: "#FFFFFF", padding: "8px", borderRadius: "6px", borderLeft: "3px solid #2D6A9F" }}>
+                                        <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "10px", fontWeight: 600, color: "#5A7A96", marginBottom: "4px", textTransform: "uppercase" }}>
+                                          Remarks
+                                        </div>
+                                        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "#1A2E40", lineHeight: "1.4" }}>
+                                          {session.remarks}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                            <div style={{ paddingTop: "16px", borderTop: "1px solid #D0E8F5" }}>
+                              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                                <div>
+                                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", fontWeight: 600, color: "#5A7A96", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "4px" }}>
+                                    Package Value
+                                  </div>
+                                  <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#1A2E40" }}>{pkg.value}</div>
+                                </div>
+                                <div>
+                                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", fontWeight: 600, color: "#5A7A96", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "4px" }}>
+                                    Expiry Date
+                                  </div>
+                                  <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#1A2E40" }}>{pkg.expiryDate}</div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <div style={{ textAlign: "center", padding: "40px 20px", color: "#5A7A96", fontFamily: "'Inter', sans-serif", fontSize: "13px" }}>
+                      No packages availed yet.
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Appointments Tab */}
               {profileTab === "appointments" && (
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
@@ -480,6 +657,118 @@ export default function PatientProfilePage() {
           </div>
         </div>
       </div>
+
+      {/* Edit Profile Modal */}
+      {showEditModal && editData && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(26, 46, 64, 0.5)",
+            backdropFilter: "blur(4px)",
+            zIndex: 100,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "24px",
+          }}
+          onClick={() => setShowEditModal(false)}
+        >
+          <div
+            style={{
+              background: "#FFFFFF",
+              borderRadius: "16px",
+              width: "100%",
+              maxWidth: "540px",
+              boxShadow: "0 8px 32px rgba(26, 58, 92, 0.18)",
+              overflow: "hidden",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ padding: "20px 24px", borderBottom: "1px solid #D0E8F5", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "16px", color: "#1A2E40" }}>Edit Personal Information</span>
+              <button onClick={() => setShowEditModal(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "#5A7A96" }}>
+                <X size={20} />
+              </button>
+            </div>
+            <div style={{ padding: "24px", maxHeight: "70vh", overflowY: "auto" }}>
+              {[
+                { label: "First Name", key: "firstName", placeholder: "e.g. Maria", required: true },
+                { label: "Middle Name", key: "middleName", placeholder: "e.g. Garcia", required: false },
+                { label: "Last Name", key: "lastName", placeholder: "e.g. Santos", required: true },
+                { label: "Phone Number", key: "phone", placeholder: "0917-123-4567", required: true },
+                { label: "Email Address", key: "email", placeholder: "patient@email.com", required: true },
+                { label: "Date of Birth", key: "dob", placeholder: "", type: "text", required: false },
+                { label: "Address", key: "address", placeholder: "Street address, city...", required: true },
+              ].map((f) => (
+                <div key={f.key} style={{ marginBottom: "16px" }}>
+                  <label style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "#1A2E40", marginBottom: "6px" }}>
+                    {f.label} {f.required ? <span style={{ color: "#EF4444" }}>*</span> : <span style={{ fontSize: "11px", color: "#9BBAD4" }}>(Optional)</span>}
+                  </label>
+                  <input
+                    type={f.type || "text"}
+                    placeholder={f.placeholder}
+                    value={editData[f.key] || ""}
+                    onChange={(e) => {
+                      setEditData({ ...editData, [f.key]: e.target.value });
+                      if (formErrors[f.key]) {
+                        const newErrors = { ...formErrors };
+                        delete newErrors[f.key];
+                        setFormErrors(newErrors);
+                      }
+                    }}
+                    style={{
+                      width: "100%",
+                      height: "40px",
+                      border: `1.5px solid ${formErrors[f.key] ? "#EF4444" : "#D0E8F5"}`,
+                      borderRadius: "8px",
+                      padding: "0 12px",
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: "13px",
+                      color: "#1A2E40",
+                      outline: "none",
+                      boxSizing: "border-box",
+                      background: formErrors[f.key] ? "#FEE2E2" : "#FFFFFF",
+                    }}
+                  />
+                  {formErrors[f.key] && (
+                    <div style={{ fontSize: "11px", color: "#EF4444", marginTop: "4px", fontFamily: "'Inter', sans-serif" }}>
+                      {formErrors[f.key]}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            <div style={{ padding: "16px 24px", borderTop: "1px solid #D0E8F5", display: "flex", justifyContent: "flex-end", gap: "10px" }}>
+              <button
+                onClick={() => setShowEditModal(false)}
+                style={{ height: "38px", padding: "0 20px", background: "none", border: "1.5px solid #D0E8F5", borderRadius: "8px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "14px", color: "#5A7A96" }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setShowEditModal(false);
+                }}
+                style={{
+                  height: "38px",
+                  padding: "0 20px",
+                  background: "#2D6A9F",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  color: "#FFFFFF",
+                }}
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </PageWrapper>
   );
 }

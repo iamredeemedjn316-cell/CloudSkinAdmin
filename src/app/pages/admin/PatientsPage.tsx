@@ -54,6 +54,8 @@ export default function PatientsPage() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [confirmAction, setConfirmAction] = useState<{ type: "archive" | "delete" | "toggle"; patientId: string } | null>(null);
   const [actionMenuOpen, setActionMenuOpen] = useState<string | null>(null);
+  const [newPatient, setNewPatient] = useState({ firstName: "", middleName: "", lastName: "", phone: "", email: "", dob: "", address: "" });
+  const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
 
   const handleEditPatient = (patient: any) => {
     setEditingPatient({ ...patient });
@@ -110,6 +112,65 @@ export default function PatientsPage() {
     setShowConfirmModal(false);
     setConfirmAction(null);
     setActionMenuOpen(null);
+  };
+
+  const validatePatientForm = () => {
+    const errors: { [key: string]: string } = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^[0-9\-\+\s]{10,}$/;
+
+    if (!newPatient.firstName.trim()) errors.firstName = "First name is required";
+    if (!newPatient.lastName.trim()) errors.lastName = "Last name is required";
+    if (!newPatient.phone.trim()) errors.phone = "Phone number is required";
+    if (!newPatient.phone.trim()) {
+      errors.phone = "Phone number is required";
+    } else if (!phoneRegex.test(newPatient.phone)) {
+      errors.phone = "Phone number format is invalid";
+    }
+    if (!newPatient.email.trim()) errors.email = "Email address is required";
+    else if (!emailRegex.test(newPatient.email)) {
+      errors.email = "Email format is invalid";
+    }
+    if (!newPatient.address.trim()) errors.address = "Address is required";
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleSaveNewPatient = () => {
+    if (!validatePatientForm()) return;
+
+    const patientId = `P${String(patientList.length + 1).padStart(3, "0")}`;
+    const firstInitial = newPatient.firstName.charAt(0);
+    const lastInitial = newPatient.lastName.charAt(0);
+    const initials = firstInitial + lastInitial;
+
+    const createdPatient = {
+      id: patientId,
+      initials: initials.toUpperCase(),
+      color: ["#2D6A9F", "#16A34A", "#7C3AED", "#EA580C", "#0891B2", "#B45309", "#9D174D", "#065F46", "#6B21A8", "#0C4A6E"][
+        Math.floor(Math.random() * 10)
+      ],
+      name: `${newPatient.firstName} ${newPatient.lastName}`,
+      firstName: newPatient.firstName,
+      middleName: newPatient.middleName,
+      lastName: newPatient.lastName,
+      phone: newPatient.phone,
+      email: newPatient.email,
+      dob: newPatient.dob || "Not provided",
+      age: 0,
+      lastVisit: "Never",
+      practitioner: "Unassigned",
+      status: "active",
+      totalVisits: 0,
+      archived: false,
+      address: newPatient.address,
+    };
+
+    setPatientList([...patientList, createdPatient]);
+    setShowNewModal(false);
+    setNewPatient({ firstName: "", middleName: "", lastName: "", phone: "", email: "", dob: "", address: "" });
+    setFormErrors({});
   };
 
   const filtered = patientList.filter(
@@ -676,49 +737,238 @@ export default function PatientsPage() {
       {/* New Patient Modal */}
       {showNewModal && (
         <div
-          style={{ position: "fixed", inset: 0, background: "rgba(26,58,92,0.5)", backdropFilter: "blur(4px)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", padding: "24px" }}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(26, 46, 64, 0.5)",
+            backdropFilter: "blur(4px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+            padding: "24px",
+          }}
           onClick={() => setShowNewModal(false)}
         >
           <div
-            style={{ background: "#FFFFFF", borderRadius: "16px", width: "100%", maxWidth: "480px", boxShadow: "0 8px 32px rgba(26,58,92,0.18)", overflow: "hidden" }}
+            style={{
+              background: "#FFFFFF",
+              borderRadius: "16px",
+              width: "100%",
+              maxWidth: "540px",
+              boxShadow: "0 8px 32px rgba(26, 58, 92, 0.18)",
+              overflow: "hidden",
+            }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ padding: "20px 24px", borderBottom: "1px solid #D0E8F5", display: "flex", justifyContent: "space-between" }}>
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "16px", color: "#1A2E40" }}>New Patient</span>
-              <button onClick={() => setShowNewModal(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "#5A7A96" }}><X size={20} /></button>
+            <div style={{ padding: "20px 24px", borderBottom: "1px solid #D0E8F5", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "16px", color: "#1A2E40" }}>Add New Patient</span>
+              <button onClick={() => setShowNewModal(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "#5A7A96", display: "flex" }}>
+                <X size={20} />
+              </button>
             </div>
-            <div style={{ padding: "24px" }}>
-              {[
-                { label: "Full Name", placeholder: "e.g. Maria Santos" },
-                { label: "Phone Number", placeholder: "09XX-XXX-XXXX" },
-                { label: "Email Address", placeholder: "patient@email.com" },
-                { label: "Date of Birth", placeholder: "", type: "date" },
-                { label: "Assigned Practitioner", placeholder: "Select practitioner..." },
-              ].map((f) => (
-                <div key={f.label} style={{ marginBottom: "16px" }}>
-                  <label style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "#1A2E40", marginBottom: "6px" }}>{f.label}</label>
-                  {f.label === "Assigned Practitioner" ? (
-                    <select
-                      style={{ width: "100%", height: "40px", border: "1.5px solid #D0E8F5", borderRadius: "8px", padding: "0 12px", fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#1A2E40", outline: "none", boxSizing: "border-box", background: "#FFFFFF", cursor: "pointer" }}
-                    >
-                      <option value="" style={{ color: "#9BBAD4" }}>Select practitioner...</option>
-                      <option value="Dr. Santos">Dr. Santos</option>
-                      <option value="Dr. Reyes">Dr. Reyes</option>
-                      <option value="Dr. Lim">Dr. Lim</option>
-                    </select>
-                  ) : (
-                    <input
-                      type={f.type || "text"}
-                      placeholder={f.placeholder}
-                      style={{ width: "100%", height: "40px", border: "1.5px solid #D0E8F5", borderRadius: "8px", padding: "0 12px", fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#1A2E40", outline: "none", boxSizing: "border-box" }}
-                    />
-                  )}
+            <div style={{ padding: "24px", maxHeight: "70vh", overflowY: "auto" }}>
+              {/* First, Middle, Last Name Row */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "16px" }}>
+                <div>
+                  <label style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "#1A2E40", marginBottom: "6px" }}>
+                    First Name <span style={{ color: "#EF4444" }}>*</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Maria"
+                    value={newPatient.firstName}
+                    onChange={(e) => {
+                      setNewPatient({ ...newPatient, firstName: e.target.value });
+                      if (formErrors.firstName) setFormErrors({ ...formErrors, firstName: "" });
+                    }}
+                    style={{
+                      width: "100%",
+                      height: "40px",
+                      border: `1.5px solid ${formErrors.firstName ? "#EF4444" : "#D0E8F5"}`,
+                      borderRadius: "8px",
+                      padding: "0 12px",
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: "13px",
+                      color: "#1A2E40",
+                      outline: "none",
+                      boxSizing: "border-box",
+                      background: formErrors.firstName ? "#FEE2E2" : "#FFFFFF",
+                    }}
+                  />
+                  {formErrors.firstName && <div style={{ fontSize: "11px", color: "#EF4444", marginTop: "4px", fontFamily: "'Inter', sans-serif" }}>{formErrors.firstName}</div>}
                 </div>
-              ))}
+                <div>
+                  <label style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "#1A2E40", marginBottom: "6px" }}>
+                    Middle Name <span style={{ fontSize: "11px", color: "#9BBAD4" }}>(Optional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Garcia"
+                    value={newPatient.middleName}
+                    onChange={(e) => setNewPatient({ ...newPatient, middleName: e.target.value })}
+                    style={{ width: "100%", height: "40px", border: "1.5px solid #D0E8F5", borderRadius: "8px", padding: "0 12px", fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#1A2E40", outline: "none", boxSizing: "border-box" }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ marginBottom: "16px" }}>
+                <label style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "#1A2E40", marginBottom: "6px" }}>
+                  Last Name <span style={{ color: "#EF4444" }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Santos"
+                  value={newPatient.lastName}
+                  onChange={(e) => {
+                    setNewPatient({ ...newPatient, lastName: e.target.value });
+                    if (formErrors.lastName) setFormErrors({ ...formErrors, lastName: "" });
+                  }}
+                  style={{
+                    width: "100%",
+                    height: "40px",
+                    border: `1.5px solid ${formErrors.lastName ? "#EF4444" : "#D0E8F5"}`,
+                    borderRadius: "8px",
+                    padding: "0 12px",
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: "13px",
+                    color: "#1A2E40",
+                    outline: "none",
+                    boxSizing: "border-box",
+                    background: formErrors.lastName ? "#FEE2E2" : "#FFFFFF",
+                  }}
+                />
+                {formErrors.lastName && <div style={{ fontSize: "11px", color: "#EF4444", marginTop: "4px", fontFamily: "'Inter', sans-serif" }}>{formErrors.lastName}</div>}
+              </div>
+
+              <div style={{ marginBottom: "16px" }}>
+                <label style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "#1A2E40", marginBottom: "6px" }}>
+                  Phone Number <span style={{ color: "#EF4444" }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="0917-123-4567"
+                  value={newPatient.phone}
+                  onChange={(e) => {
+                    setNewPatient({ ...newPatient, phone: e.target.value });
+                    if (formErrors.phone) setFormErrors({ ...formErrors, phone: "" });
+                  }}
+                  style={{
+                    width: "100%",
+                    height: "40px",
+                    border: `1.5px solid ${formErrors.phone ? "#EF4444" : "#D0E8F5"}`,
+                    borderRadius: "8px",
+                    padding: "0 12px",
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: "13px",
+                    color: "#1A2E40",
+                    outline: "none",
+                    boxSizing: "border-box",
+                    background: formErrors.phone ? "#FEE2E2" : "#FFFFFF",
+                  }}
+                />
+                {formErrors.phone && <div style={{ fontSize: "11px", color: "#EF4444", marginTop: "4px", fontFamily: "'Inter', sans-serif" }}>{formErrors.phone}</div>}
+              </div>
+
+              <div style={{ marginBottom: "16px" }}>
+                <label style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "#1A2E40", marginBottom: "6px" }}>
+                  Email Address <span style={{ color: "#EF4444" }}>*</span>
+                </label>
+                <input
+                  type="email"
+                  placeholder="patient@email.com"
+                  value={newPatient.email}
+                  onChange={(e) => {
+                    setNewPatient({ ...newPatient, email: e.target.value });
+                    if (formErrors.email) setFormErrors({ ...formErrors, email: "" });
+                  }}
+                  style={{
+                    width: "100%",
+                    height: "40px",
+                    border: `1.5px solid ${formErrors.email ? "#EF4444" : "#D0E8F5"}`,
+                    borderRadius: "8px",
+                    padding: "0 12px",
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: "13px",
+                    color: "#1A2E40",
+                    outline: "none",
+                    boxSizing: "border-box",
+                    background: formErrors.email ? "#FEE2E2" : "#FFFFFF",
+                  }}
+                />
+                {formErrors.email && <div style={{ fontSize: "11px", color: "#EF4444", marginTop: "4px", fontFamily: "'Inter', sans-serif" }}>{formErrors.email}</div>}
+              </div>
+
+              <div style={{ marginBottom: "16px" }}>
+                <label style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "#1A2E40", marginBottom: "6px" }}>
+                  Date of Birth <span style={{ fontSize: "11px", color: "#9BBAD4" }}>(Optional)</span>
+                </label>
+                <input
+                  type="date"
+                  value={newPatient.dob}
+                  onChange={(e) => setNewPatient({ ...newPatient, dob: e.target.value })}
+                  style={{ width: "100%", height: "40px", border: "1.5px solid #D0E8F5", borderRadius: "8px", padding: "0 12px", fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#1A2E40", outline: "none", boxSizing: "border-box" }}
+                />
+              </div>
+
+              <div style={{ marginBottom: "16px" }}>
+                <label style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "#1A2E40", marginBottom: "6px" }}>
+                  Address <span style={{ color: "#EF4444" }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Street address, city, province..."
+                  value={newPatient.address}
+                  onChange={(e) => {
+                    setNewPatient({ ...newPatient, address: e.target.value });
+                    if (formErrors.address) setFormErrors({ ...formErrors, address: "" });
+                  }}
+                  style={{
+                    width: "100%",
+                    height: "40px",
+                    border: `1.5px solid ${formErrors.address ? "#EF4444" : "#D0E8F5"}`,
+                    borderRadius: "8px",
+                    padding: "0 12px",
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: "13px",
+                    color: "#1A2E40",
+                    outline: "none",
+                    boxSizing: "border-box",
+                    background: formErrors.address ? "#FEE2E2" : "#FFFFFF",
+                  }}
+                />
+                {formErrors.address && <div style={{ fontSize: "11px", color: "#EF4444", marginTop: "4px", fontFamily: "'Inter', sans-serif" }}>{formErrors.address}</div>}
+              </div>
             </div>
             <div style={{ padding: "16px 24px", borderTop: "1px solid #D0E8F5", display: "flex", justifyContent: "flex-end", gap: "10px" }}>
-              <button onClick={() => setShowNewModal(false)} style={{ height: "38px", padding: "0 20px", background: "none", border: "1.5px solid #D0E8F5", borderRadius: "8px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "14px", color: "#5A7A96" }}>Cancel</button>
-              <button style={{ height: "38px", padding: "0 20px", background: "#2D6A9F", border: "none", borderRadius: "8px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "14px", fontWeight: 600, color: "#FFFFFF" }}>Save Patient</button>
+              <button
+                onClick={() => {
+                  setShowNewModal(false);
+                  setNewPatient({ firstName: "", middleName: "", lastName: "", phone: "", email: "", dob: "", address: "" });
+                  setFormErrors({});
+                }}
+                style={{ height: "38px", padding: "0 20px", background: "none", border: "1.5px solid #D0E8F5", borderRadius: "8px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "14px", color: "#5A7A96" }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveNewPatient}
+                style={{
+                  height: "38px",
+                  padding: "0 20px",
+                  background: "#2D6A9F",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  color: "#FFFFFF",
+                  opacity: Object.keys(formErrors).length > 0 ? 0.6 : 1,
+                }}
+              >
+                Create Patient
+              </button>
             </div>
           </div>
         </div>
