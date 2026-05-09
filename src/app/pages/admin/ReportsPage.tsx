@@ -62,7 +62,6 @@ const inventoryUsage = [
   { item: "Chemical Peel Solution", used: 88 },
 ];
 
-const tabs = ["Revenue", "Appointments", "Inventory", "Vouchers", "Patients", "Active Patients", "Services", "Packages"];
 const dateRanges = ["Today", "This Week", "This Month", "Custom"];
 
 export default function ReportsPage() {
@@ -192,19 +191,6 @@ export default function ReportsPage() {
 
   return (
     <PageWrapper title={getPageTitle()} breadcrumb={`Admin / ${getPageTitle()}`}>
-      {/* Sub-tabs */}
-      <div style={{ display: "flex", borderBottom: "1px solid #D0E8F5", marginBottom: "24px", overflowX: "auto" }}>
-        {tabs.map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            style={{ background: "none", border: "none", borderBottom: activeTab === tab ? "2px solid #2D6A9F" : "2px solid transparent", padding: "12px 14px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: activeTab === tab ? 600 : 400, fontSize: "13px", color: activeTab === tab ? "#2D6A9F" : "#5A7A96", marginBottom: "-1px", whiteSpace: "nowrap" }}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
-
       {/* Shared Toolbar */}
       <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "24px", flexWrap: "wrap" }}>
         {dateRanges.map((d) => (
