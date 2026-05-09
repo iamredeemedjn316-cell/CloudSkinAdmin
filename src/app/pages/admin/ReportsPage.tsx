@@ -62,7 +62,7 @@ const inventoryUsage = [
   { item: "Chemical Peel Solution", used: 88 },
 ];
 
-const tabs = ["Revenue", "Appointments", "Inventory", "Vouchers", "Patients", "Active Patients", "Services", "Packages", "Practitioner"];
+const tabs = ["Revenue", "Appointments", "Inventory", "Vouchers", "Patients", "Active Patients", "Services", "Packages"];
 const dateRanges = ["Today", "This Week", "This Month", "Custom"];
 
 export default function ReportsPage() {
