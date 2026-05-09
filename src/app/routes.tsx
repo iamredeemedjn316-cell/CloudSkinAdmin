@@ -16,6 +16,8 @@ import VouchersPage from "./pages/admin/VouchersPage";
 import PaymentsPage from "./pages/admin/PaymentsPage";
 import ReportsPage from "./pages/admin/ReportsPage";
 import BlogPage from "./pages/admin/BlogPage";
+import MessagesPage from "./pages/admin/MessagesPage";
+import ReviewsPage from "./pages/admin/ReviewsPage";
 import SettingsPage from "./pages/admin/SettingsPage";
 import PractitionerDashboard from "./pages/practitioner/PractitionerDashboard";
 import SchedulePage from "./pages/practitioner/SchedulePage";
@@ -48,6 +50,8 @@ export const router = createBrowserRouter([
       { path: "vouchers", element: <VouchersPage /> },
       { path: "payments", element: <PaymentsPage /> },
       { path: "reports", element: <ReportsPage /> },
+      { path: "messages", element: <MessagesPage /> },
+      { path: "reviews", element: <ReviewsPage /> },
       { path: "blog", element: <BlogPage /> },
       { path: "settings", element: <SettingsPage /> },
     ],

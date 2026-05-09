@@ -5,7 +5,7 @@ import {
   Package, Tag, CreditCard, BarChart2, FileText, Settings,
   ChevronLeft, ChevronRight, LogOut, Bell, Archive, UserCheck, UserX,
   Eye, CheckCircle, Clock, XCircle, Loader, DollarSign, ClipboardList,
-  Boxes, Gift, Activity, Sparkles
+  Boxes, Gift, Activity, Sparkles, MessageSquare, Star
 } from "lucide-react";
 import { useApp, UserRole } from "../../context/AppContext";
 
@@ -82,6 +82,8 @@ const adminNavItems: NavItem[] = [
       { label: "Packages Report", icon: <Sparkles size={16} />, path: "/admin/reports?type=packages" },
     ]
   },
+  { label: "Messages", icon: <MessageSquare size={20} />, path: "/admin/messages", badge: 5 },
+  { label: "Reviews", icon: <Star size={20} />, path: "/admin/reviews" },
   { label: "Blog", icon: <FileText size={20} />, path: "/admin/blog" },
   { label: "Settings", icon: <Settings size={20} />, path: "/admin/settings" },
 ];
