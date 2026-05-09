@@ -15,7 +15,7 @@ export default function SettingsPage() {
   });
 
   const sections = [
-    { key: "booking", label: "Booking Configuration" },
+    { key: "booking", label: "Appointment Configuration" },
     { key: "clinic", label: "Clinic Information" },
     { key: "notifications", label: "Notification Preferences" },
   ];
@@ -55,8 +55,8 @@ export default function SettingsPage() {
           {activeSection === "booking" && (
             <div style={{ background: "#FFFFFF", borderRadius: "12px", boxShadow: "0 1px 4px rgba(26,58,92,0.08)", overflow: "hidden" }}>
               <div style={{ padding: "20px 24px", borderBottom: "1px solid #D0E8F5" }}>
-                <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "16px", color: "#1A2E40" }}>Booking Configuration</div>
-                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#5A7A96", marginTop: "2px" }}>Configure appointment scheduling rules</div>
+                <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "16px", color: "#1A2E40" }}>Appointment Configuration</div>
+                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#5A7A96", marginTop: "2px" }}>Configure appointment scheduling rules and time intervals</div>
               </div>
 
               <div style={{ padding: "24px" }}>
@@ -90,9 +90,9 @@ export default function SettingsPage() {
                 </div>
 
                 <div style={{ marginBottom: "24px" }}>
-                  <label style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "#1A2E40", marginBottom: "10px" }}>Slot Interval</label>
-                  <div style={{ display: "flex", gap: "12px" }}>
-                    {[{ value: "30", label: "30 minutes" }, { value: "60", label: "60 minutes" }].map((opt) => (
+                  <label style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "#1A2E40", marginBottom: "10px" }}>Appointment Slot Interval</label>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px" }}>
+                    {[{ value: "20", label: "20 minutes" }, { value: "30", label: "30 minutes" }, { value: "60", label: "60 minutes" }].map((opt) => (
                       <label key={opt.value} style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", padding: "10px 16px", border: `1.5px solid ${slotInterval === opt.value ? "#2D6A9F" : "#D0E8F5"}`, borderRadius: "8px", background: slotInterval === opt.value ? "#EBF6FD" : "#FFFFFF" }}>
                         <input type="radio" checked={slotInterval === opt.value} onChange={() => setSlotInterval(opt.value)} style={{ display: "none" }} />
                         <div style={{ width: "16px", height: "16px", borderRadius: "50%", border: `2px solid ${slotInterval === opt.value ? "#2D6A9F" : "#9BBAD4"}`, background: slotInterval === opt.value ? "#2D6A9F" : "transparent", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -105,7 +105,7 @@ export default function SettingsPage() {
                 </div>
 
                 <button style={{ height: "40px", padding: "0 24px", background: "#2D6A9F", border: "none", borderRadius: "8px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "14px", fontWeight: 600, color: "#FFFFFF", display: "flex", alignItems: "center", gap: "8px" }}>
-                  <Save size={15} /> Save Booking Settings
+                  <Save size={15} /> Save Appointment Settings
                 </button>
               </div>
             </div>
