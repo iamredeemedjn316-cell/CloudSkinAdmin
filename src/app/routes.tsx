@@ -5,6 +5,7 @@ import LoginPage from "./pages/LoginPage";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AppointmentsPage from "./pages/admin/AppointmentsPage";
 import PatientsPage from "./pages/admin/PatientsPage";
+import PatientProfilePage from "./pages/admin/PatientProfilePage";
 import StaffPage from "./pages/admin/StaffPage";
 import ServicesPage from "./pages/admin/ServicesPage";
 import InventoryPage from "./pages/admin/InventoryPage";
@@ -34,6 +35,7 @@ export const router = createBrowserRouter([
       { index: true, element: <AdminDashboard /> },
       { path: "appointments", element: <AppointmentsPage /> },
       { path: "patients", element: <PatientsPage /> },
+      { path: "patients/:patientId", element: <PatientProfilePage /> },
       { path: "staff", element: <StaffPage /> },
       { path: "services", element: <ServicesPage /> },
       { path: "inventory", element: <InventoryPage /> },

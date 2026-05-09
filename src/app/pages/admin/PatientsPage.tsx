@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router";
 import { Search, Plus, Eye, Pencil, MoreVertical, X, User, Calendar, CreditCard, Activity } from "lucide-react";
 import { PageWrapper } from "../../components/layout/PageWrapper";
 import { StatusBadge } from "../../components/StatusBadge";
@@ -42,6 +43,7 @@ const patientProfile = {
 };
 
 export default function PatientsPage() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [showNewModal, setShowNewModal] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<any>(null);
@@ -210,7 +212,7 @@ export default function PatientsPage() {
                   <td style={{ padding: "12px 16px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                       <button
-                        onClick={() => setSelectedPatient(patient)}
+                        onClick={() => navigate(`/admin/patients/${patient.id}`)}
                         style={{
                           width: "28px",
                           height: "28px",
