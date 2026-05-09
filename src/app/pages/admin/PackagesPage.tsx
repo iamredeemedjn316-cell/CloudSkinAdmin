@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useSearchParams } from "react-router";
 import { Plus, Pencil, Trash2, X, ChevronDown } from "lucide-react";
 import { PageWrapper } from "../../components/layout/PageWrapper";
 import { StatusBadge } from "../../components/StatusBadge";
@@ -24,6 +25,8 @@ const serviceMap: Record<string, string> = {
 };
 
 export default function PackagesPage() {
+  const [searchParams] = useSearchParams();
+  const statusFilter = searchParams.get("status") || "all";
   const [packagesList, setPackagesList] = useState(initialPackages);
   const [showModal, setShowModal] = useState(false);
   const [editingPackage, setEditingPackage] = useState<any>(null);
@@ -137,11 +140,26 @@ export default function PackagesPage() {
         : [...prev.includedServices, serviceId],
     }));
   };
+  
+  // Filter packages based on URL status
+  const filteredPackages = packagesList.filter((pkg) => {
+    if (statusFilter === "all") return true;
+    return pkg.status === statusFilter;
+  });
+  
+  // Get page title based on status filter
+  const getPageTitle = () => {
+    switch (statusFilter) {
+      case "active": return "Active Packages";
+      case "inactive": return "Inactive Packages";
+      default: return "Packages";
+    }
+  };
 
   return (
-    <PageWrapper title="Packages" breadcrumb="Admin / Packages">
+    <PageWrapper title={getPageTitle()} breadcrumb={`Admin / ${getPageTitle()}`}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
-        <h2 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "18px", color: "#1A2E40" }}>All Packages</h2>
+        <h2 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "18px", color: "#1A2E40" }}>{statusFilter === "all" ? "All Packages" : getPageTitle()}</h2>
         <button
           onClick={() => handleOpenModal()}
           style={{ height: "40px", padding: "0 18px", background: "#2D6A9F", border: "none", borderRadius: "8px", color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", fontWeight: 600 }}
@@ -151,7 +169,7 @@ export default function PackagesPage() {
       </div>
 
       <div style={{ display: "grid", gap: "12px" }}>
-        {packagesList.map((pkg) => (
+        {filteredPackages.map((pkg) => (
           <div
             key={pkg.id}
             style={{

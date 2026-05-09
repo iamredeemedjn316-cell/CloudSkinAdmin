@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useSearchParams } from "react-router";
 import { Plus, Pencil, X, Upload, Image as ImageIcon, Trash2 } from "lucide-react";
 import { PageWrapper } from "../../components/layout/PageWrapper";
 import { StatusBadge } from "../../components/StatusBadge";
@@ -26,6 +27,8 @@ const practitionerMap: Record<string, { color: string; name: string }> = {
 };
 
 export default function ServicesPage() {
+  const [searchParams] = useSearchParams();
+  const statusFilter = searchParams.get("status") || "all";
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [showModal, setShowModal] = useState(false);
   const [editingService, setEditingService] = useState<any>(null);
@@ -34,7 +37,21 @@ export default function ServicesPage() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [serviceToDelete, setServiceToDelete] = useState<any>(null);
 
-  const filtered = servicesList.filter((s) => categoryFilter === "All" || s.category === categoryFilter);
+  const filtered = servicesList.filter((s) => {
+    // Apply status filter from URL
+    if (statusFilter !== "all" && s.status !== statusFilter) return false;
+    // Apply category filter
+    return categoryFilter === "All" || s.category === categoryFilter;
+  });
+  
+  // Get page title based on status filter
+  const getPageTitle = () => {
+    switch (statusFilter) {
+      case "active": return "Active Services";
+      case "inactive": return "Inactive Services";
+      default: return "Services";
+    }
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -77,7 +94,7 @@ export default function ServicesPage() {
   };
 
   return (
-    <PageWrapper title="Services" breadcrumb="Admin / Services">
+    <PageWrapper title={getPageTitle()} breadcrumb={`Admin / ${getPageTitle()}`}>
       {/* Toolbar */}
       <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "24px", flexWrap: "wrap" }}>
         <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", flex: 1 }}>

@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "react-router";
 import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from "recharts";
-import { Download, X } from "lucide-react";
+import { Download, X, ChevronDown, FileText, FileSpreadsheet } from "lucide-react";
 import { PageWrapper } from "../../components/layout/PageWrapper";
 import { StatCard } from "../../components/StatCard";
 import { DollarSign, Calendar, BarChart2, Tag } from "lucide-react";
@@ -61,13 +62,60 @@ const inventoryUsage = [
   { item: "Chemical Peel Solution", used: 88 },
 ];
 
-const tabs = ["Revenue", "Appointments", "Inventory", "Vouchers", "Practitioner"];
+const tabs = ["Revenue", "Appointments", "Inventory", "Vouchers", "Patients", "Active Patients", "Services", "Packages", "Practitioner"];
 const dateRanges = ["Today", "This Week", "This Month", "Custom"];
 
 export default function ReportsPage() {
+  const [searchParams] = useSearchParams();
+  const reportType = searchParams.get("type");
   const [activeTab, setActiveTab] = useState("Revenue");
   const [dateRange, setDateRange] = useState("This Week");
   const [showCustomModal, setShowCustomModal] = useState(false);
+  const [showExportMenu, setShowExportMenu] = useState(false);
+  const [voucherFilter, setVoucherFilter] = useState<"all" | "active" | "inactive">("all");
+  
+  // Map URL type to tab name
+  useEffect(() => {
+    if (reportType) {
+      const typeToTab: Record<string, string> = {
+        "sales": "Revenue",
+        "appointments": "Appointments",
+        "inventory": "Inventory",
+        "vouchers": "Vouchers",
+        "active-patients": "Active Patients",
+        "patients": "Patients",
+        "services": "Services",
+        "packages": "Packages",
+      };
+      if (typeToTab[reportType]) {
+        setActiveTab(typeToTab[reportType]);
+      }
+    }
+  }, [reportType]);
+  
+  // Get page title based on report type
+  const getPageTitle = () => {
+    if (reportType) {
+      const titles: Record<string, string> = {
+        "sales": "Sales Report",
+        "appointments": "Appointments Report",
+        "inventory": "Inventory Report",
+        "vouchers": "Vouchers Report",
+        "active-patients": "Active Patients Report",
+        "patients": "Patients Report",
+        "services": "Services Report",
+        "packages": "Packages Report",
+      };
+      return titles[reportType] || "Reports";
+    }
+    return "Reports";
+  };
+  
+  const handleExport = (format: "csv" | "pdf" | "word") => {
+    // In a real app, this would trigger the export
+    console.log(`Exporting ${activeTab} report as ${format.toUpperCase()}`);
+    setShowExportMenu(false);
+  };
   const [customRangeType, setCustomRangeType] = useState<"day" | "days" | "month" | "months" | "year" | "years">("days");
   const [customStartDate, setCustomStartDate] = useState("");
   const [customEndDate, setCustomEndDate] = useState("");
@@ -143,14 +191,14 @@ export default function ReportsPage() {
   };
 
   return (
-    <PageWrapper title="Reports" breadcrumb="Admin / Reports">
+    <PageWrapper title={getPageTitle()} breadcrumb={`Admin / ${getPageTitle()}`}>
       {/* Sub-tabs */}
-      <div style={{ display: "flex", borderBottom: "1px solid #D0E8F5", marginBottom: "24px" }}>
+      <div style={{ display: "flex", borderBottom: "1px solid #D0E8F5", marginBottom: "24px", overflowX: "auto" }}>
         {tabs.map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            style={{ background: "none", border: "none", borderBottom: activeTab === tab ? "2px solid #2D6A9F" : "2px solid transparent", padding: "12px 18px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: activeTab === tab ? 600 : 400, fontSize: "14px", color: activeTab === tab ? "#2D6A9F" : "#5A7A96", marginBottom: "-1px" }}
+            style={{ background: "none", border: "none", borderBottom: activeTab === tab ? "2px solid #2D6A9F" : "2px solid transparent", padding: "12px 14px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: activeTab === tab ? 600 : 400, fontSize: "13px", color: activeTab === tab ? "#2D6A9F" : "#5A7A96", marginBottom: "-1px", whiteSpace: "nowrap" }}
           >
             {tab}
           </button>
@@ -158,7 +206,7 @@ export default function ReportsPage() {
       </div>
 
       {/* Shared Toolbar */}
-      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "24px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "24px", flexWrap: "wrap" }}>
         {dateRanges.map((d) => (
           <button
             key={d}
@@ -168,10 +216,59 @@ export default function ReportsPage() {
             {d === "Custom" && customRangeLabel ? customRangeLabel : d}
           </button>
         ))}
-        <div style={{ marginLeft: "auto" }}>
-          <button style={{ height: "36px", padding: "0 16px", background: "none", border: "1.5px solid #D0E8F5", borderRadius: "8px", color: "#5A7A96", display: "flex", alignItems: "center", gap: "6px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", fontWeight: 500 }}>
-            <Download size={14} /> Export CSV
+        
+        {/* Voucher Filter - only show for Vouchers tab */}
+        {activeTab === "Vouchers" && (
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", marginLeft: "16px" }}>
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "#5A7A96" }}>Filter:</span>
+            <select 
+              value={voucherFilter} 
+              onChange={(e) => setVoucherFilter(e.target.value as any)}
+              style={{ height: "36px", padding: "0 12px", background: "#FFFFFF", border: "1.5px solid #D0E8F5", borderRadius: "8px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "#1A2E40", outline: "none" }}
+            >
+              <option value="all">All Vouchers</option>
+              <option value="active">Active Vouchers</option>
+              <option value="inactive">Inactive Vouchers</option>
+            </select>
+          </div>
+        )}
+        
+        {/* Export Dropdown */}
+        <div style={{ marginLeft: "auto", position: "relative" }}>
+          <button 
+            onClick={() => setShowExportMenu(!showExportMenu)}
+            style={{ height: "36px", padding: "0 16px", background: "#2D6A9F", border: "none", borderRadius: "8px", color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", fontWeight: 600 }}
+          >
+            <Download size={14} /> Export <ChevronDown size={14} />
           </button>
+          {showExportMenu && (
+            <div style={{ position: "absolute", top: "100%", right: 0, marginTop: "4px", background: "#FFFFFF", border: "1px solid #D0E8F5", borderRadius: "8px", boxShadow: "0 4px 12px rgba(26,58,92,0.15)", zIndex: 50, minWidth: "160px", overflow: "hidden" }}>
+              <button 
+                onClick={() => handleExport("csv")}
+                style={{ width: "100%", padding: "10px 16px", background: "none", border: "none", textAlign: "left", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "#1A2E40", display: "flex", alignItems: "center", gap: "10px", borderBottom: "1px solid #F0F6FC" }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "#F8FBFF")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
+              >
+                <FileSpreadsheet size={16} color="#16A34A" /> Export as CSV
+              </button>
+              <button 
+                onClick={() => handleExport("pdf")}
+                style={{ width: "100%", padding: "10px 16px", background: "none", border: "none", textAlign: "left", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "#1A2E40", display: "flex", alignItems: "center", gap: "10px", borderBottom: "1px solid #F0F6FC" }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "#F8FBFF")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
+              >
+                <FileText size={16} color="#DC2626" /> Export as PDF
+              </button>
+              <button 
+                onClick={() => handleExport("word")}
+                style={{ width: "100%", padding: "10px 16px", background: "none", border: "none", textAlign: "left", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "#1A2E40", display: "flex", alignItems: "center", gap: "10px" }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "#F8FBFF")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
+              >
+                <FileText size={16} color="#2D6A9F" /> Export as Word
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -379,6 +476,206 @@ export default function ReportsPage() {
                     <td style={{ padding: "12px 16px" }}><span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#1A2E40" }}>{v.value}</span></td>
                     <td style={{ padding: "12px 16px" }}><span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#1A2E40" }}>{v.redeemed}</span></td>
                     <td style={{ padding: "12px 16px" }}><span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "14px", color: "#DC2626" }}>{v.discount}</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Patients Report */}
+      {activeTab === "Patients" && (
+        <div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px", marginBottom: "24px" }}>
+            {[
+              { label: "Total Patients", value: "1,248" },
+              { label: "New This Month", value: "87" },
+              { label: "Active Patients", value: "892" },
+              { label: "Retention Rate", value: "78%" },
+            ].map((s) => (
+              <div key={s.label} style={{ background: "#FFFFFF", borderRadius: "12px", padding: "16px 20px", boxShadow: "0 1px 4px rgba(26,58,92,0.08)" }}>
+                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "#5A7A96", marginBottom: "8px" }}>{s.label}</div>
+                <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "24px", color: "#1A2E40" }}>{s.value}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ background: "#FFFFFF", borderRadius: "12px", boxShadow: "0 1px 4px rgba(26,58,92,0.08)", overflow: "hidden" }}>
+            <div style={{ padding: "16px 20px", borderBottom: "1px solid #D0E8F5" }}>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "#1A2E40" }}>Patient Demographics</span>
+            </div>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr style={{ background: "#F0F6FC" }}>
+                  {["Age Group", "Count", "Percentage", "Top Service"].map((h) => (
+                    <th key={h} style={{ padding: "10px 16px", textAlign: "left", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "#5A7A96", letterSpacing: "0.06em", textTransform: "uppercase", borderBottom: "1px solid #D0E8F5" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { group: "18-25", count: 156, percentage: "12.5%", topService: "Acne Treatment" },
+                  { group: "26-35", count: 412, percentage: "33.0%", topService: "Hydra Facial" },
+                  { group: "36-45", count: 389, percentage: "31.2%", topService: "Botox Treatment" },
+                  { group: "46-55", count: 198, percentage: "15.9%", topService: "Dermal Fillers" },
+                  { group: "55+", count: 93, percentage: "7.4%", topService: "Laser Resurfacing" },
+                ].map((row, i, arr) => (
+                  <tr key={row.group} style={{ borderBottom: i < arr.length - 1 ? "1px solid #D0E8F5" : "none" }}>
+                    <td style={{ padding: "12px 16px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#1A2E40" }}>{row.group}</td>
+                    <td style={{ padding: "12px 16px", fontFamily: "'Inter', sans-serif", fontSize: "14px", color: "#1A2E40" }}>{row.count}</td>
+                    <td style={{ padding: "12px 16px", fontFamily: "'Inter', sans-serif", fontSize: "14px", color: "#5A7A96" }}>{row.percentage}</td>
+                    <td style={{ padding: "12px 16px", fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#2D6A9F" }}>{row.topService}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Active Patients Report */}
+      {activeTab === "Active Patients" && (
+        <div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px", marginBottom: "24px" }}>
+            {[
+              { label: "Active Patients", value: "892" },
+              { label: "Visited This Month", value: "234" },
+              { label: "Avg Visits/Patient", value: "3.2" },
+              { label: "Avg Spend/Patient", value: "₱12,450" },
+            ].map((s) => (
+              <div key={s.label} style={{ background: "#FFFFFF", borderRadius: "12px", padding: "16px 20px", boxShadow: "0 1px 4px rgba(26,58,92,0.08)" }}>
+                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "#5A7A96", marginBottom: "8px" }}>{s.label}</div>
+                <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "24px", color: "#1A2E40" }}>{s.value}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ background: "#FFFFFF", borderRadius: "12px", boxShadow: "0 1px 4px rgba(26,58,92,0.08)", overflow: "hidden" }}>
+            <div style={{ padding: "16px 20px", borderBottom: "1px solid #D0E8F5" }}>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "#1A2E40" }}>Top Active Patients by Visits</span>
+            </div>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr style={{ background: "#F0F6FC" }}>
+                  {["Patient", "Total Visits", "Last Visit", "Total Spent"].map((h) => (
+                    <th key={h} style={{ padding: "10px 16px", textAlign: "left", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "#5A7A96", letterSpacing: "0.06em", textTransform: "uppercase", borderBottom: "1px solid #D0E8F5" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { name: "Maria Cruz", visits: 24, lastVisit: "Apr 25, 2025", spent: "₱89,500" },
+                  { name: "Ana Garcia", visits: 18, lastVisit: "Apr 24, 2025", spent: "₱67,200" },
+                  { name: "Sofia Reyes", visits: 15, lastVisit: "Apr 23, 2025", spent: "₱54,800" },
+                  { name: "Isabella Santos", visits: 12, lastVisit: "Apr 22, 2025", spent: "₱42,100" },
+                ].map((row, i, arr) => (
+                  <tr key={row.name} style={{ borderBottom: i < arr.length - 1 ? "1px solid #D0E8F5" : "none" }}>
+                    <td style={{ padding: "12px 16px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#1A2E40" }}>{row.name}</td>
+                    <td style={{ padding: "12px 16px", fontFamily: "'Inter', sans-serif", fontSize: "14px", color: "#1A2E40" }}>{row.visits}</td>
+                    <td style={{ padding: "12px 16px", fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#5A7A96" }}>{row.lastVisit}</td>
+                    <td style={{ padding: "12px 16px", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "14px", color: "#16A34A" }}>{row.spent}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Services Report */}
+      {activeTab === "Services" && (
+        <div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px", marginBottom: "24px" }}>
+            {[
+              { label: "Total Services", value: "11" },
+              { label: "Active Services", value: "10" },
+              { label: "Most Booked", value: "Hydra Facial" },
+              { label: "Highest Revenue", value: "Laser" },
+            ].map((s) => (
+              <div key={s.label} style={{ background: "#FFFFFF", borderRadius: "12px", padding: "16px 20px", boxShadow: "0 1px 4px rgba(26,58,92,0.08)" }}>
+                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "#5A7A96", marginBottom: "8px" }}>{s.label}</div>
+                <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "24px", color: "#1A2E40" }}>{s.value}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ background: "#FFFFFF", borderRadius: "12px", boxShadow: "0 1px 4px rgba(26,58,92,0.08)", overflow: "hidden" }}>
+            <div style={{ padding: "16px 20px", borderBottom: "1px solid #D0E8F5" }}>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "#1A2E40" }}>Service Performance</span>
+            </div>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr style={{ background: "#F0F6FC" }}>
+                  {["Service", "Category", "Bookings", "Revenue", "Avg Rating"].map((h) => (
+                    <th key={h} style={{ padding: "10px 16px", textAlign: "left", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "#5A7A96", letterSpacing: "0.06em", textTransform: "uppercase", borderBottom: "1px solid #D0E8F5" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { name: "Laser Resurfacing", category: "Laser", bookings: 45, revenue: "₱675,000", rating: "4.9" },
+                  { name: "Botox Treatment", category: "Injectables", bookings: 89, revenue: "₱712,000", rating: "4.8" },
+                  { name: "Hydra Facial", category: "Skin Treatments", bookings: 156, revenue: "₱390,000", rating: "4.9" },
+                  { name: "Dermal Fillers", category: "Injectables", bookings: 34, revenue: "₱612,000", rating: "4.7" },
+                  { name: "Chemical Peel", category: "Skin Treatments", bookings: 78, revenue: "₱273,000", rating: "4.6" },
+                ].map((row, i, arr) => (
+                  <tr key={row.name} style={{ borderBottom: i < arr.length - 1 ? "1px solid #D0E8F5" : "none" }}>
+                    <td style={{ padding: "12px 16px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#1A2E40" }}>{row.name}</td>
+                    <td style={{ padding: "12px 16px", fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#5A7A96" }}>{row.category}</td>
+                    <td style={{ padding: "12px 16px", fontFamily: "'Inter', sans-serif", fontSize: "14px", color: "#1A2E40" }}>{row.bookings}</td>
+                    <td style={{ padding: "12px 16px", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "14px", color: "#16A34A" }}>{row.revenue}</td>
+                    <td style={{ padding: "12px 16px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#F59E0B" }}>{row.rating} ★</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Packages Report */}
+      {activeTab === "Packages" && (
+        <div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px", marginBottom: "24px" }}>
+            {[
+              { label: "Total Packages", value: "4" },
+              { label: "Active Packages", value: "3" },
+              { label: "Packages Sold", value: "67" },
+              { label: "Package Revenue", value: "₱892,500" },
+            ].map((s) => (
+              <div key={s.label} style={{ background: "#FFFFFF", borderRadius: "12px", padding: "16px 20px", boxShadow: "0 1px 4px rgba(26,58,92,0.08)" }}>
+                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "#5A7A96", marginBottom: "8px" }}>{s.label}</div>
+                <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "24px", color: "#1A2E40" }}>{s.value}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ background: "#FFFFFF", borderRadius: "12px", boxShadow: "0 1px 4px rgba(26,58,92,0.08)", overflow: "hidden" }}>
+            <div style={{ padding: "16px 20px", borderBottom: "1px solid #D0E8F5" }}>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "#1A2E40" }}>Package Performance</span>
+            </div>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr style={{ background: "#F0F6FC" }}>
+                  {["Package", "Price", "Sold", "Revenue", "Status"].map((h) => (
+                    <th key={h} style={{ padding: "10px 16px", textAlign: "left", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "#5A7A96", letterSpacing: "0.06em", textTransform: "uppercase", borderBottom: "1px solid #D0E8F5" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { name: "Premium Facial Package", price: "₱15,000", sold: 28, revenue: "₱420,000", status: "active" },
+                  { name: "Anti-Aging Package", price: "₱12,000", sold: 22, revenue: "₱264,000", status: "active" },
+                  { name: "Hair Restoration Package", price: "₱18,000", sold: 12, revenue: "₱216,000", status: "active" },
+                  { name: "Acne Clear Package", price: "₱8,500", sold: 5, revenue: "₱42,500", status: "inactive" },
+                ].map((row, i, arr) => (
+                  <tr key={row.name} style={{ borderBottom: i < arr.length - 1 ? "1px solid #D0E8F5" : "none" }}>
+                    <td style={{ padding: "12px 16px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#1A2E40" }}>{row.name}</td>
+                    <td style={{ padding: "12px 16px", fontFamily: "'Inter', sans-serif", fontSize: "14px", color: "#1A2E40" }}>{row.price}</td>
+                    <td style={{ padding: "12px 16px", fontFamily: "'Inter', sans-serif", fontSize: "14px", color: "#1A2E40" }}>{row.sold}</td>
+                    <td style={{ padding: "12px 16px", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "14px", color: "#16A34A" }}>{row.revenue}</td>
+                    <td style={{ padding: "12px 16px" }}>
+                      <span style={{ display: "inline-block", padding: "2px 10px", borderRadius: "9999px", fontSize: "11px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, background: row.status === "active" ? "#D1FAE5" : "#FEE2E2", color: row.status === "active" ? "#16A34A" : "#DC2626" }}>
+                        {row.status === "active" ? "Active" : "Inactive"}
+                      </span>
+                    </td>
                   </tr>
                 ))}
               </tbody>

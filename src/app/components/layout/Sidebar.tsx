@@ -4,7 +4,8 @@ import {
   LayoutDashboard, Calendar, Users, UserCog, Scissors,
   Package, Tag, CreditCard, BarChart2, FileText, Settings,
   ChevronLeft, ChevronRight, LogOut, Bell, Archive, UserCheck, UserX,
-  Eye, CheckCircle, Clock, XCircle, Loader
+  Eye, CheckCircle, Clock, XCircle, Loader, DollarSign, ClipboardList,
+  Boxes, Gift, Activity, Sparkles
 } from "lucide-react";
 import { useApp, UserRole } from "../../context/AppContext";
 
@@ -48,12 +49,39 @@ const adminNavItems: NavItem[] = [
       { label: "Staff Archive", icon: <Archive size={16} />, path: "/admin/staff-archive" }
     ]
   },
-  { label: "Services", icon: <Scissors size={20} />, path: "/admin/services" },
-  { label: "Packages", icon: <Package size={20} />, path: "/admin/packages" },
-  { label: "Inventory", icon: <Package size={20} />, path: "/admin/inventory", badge: 5 },
+  { 
+    label: "Services", 
+    icon: <Scissors size={20} />, 
+    children: [
+      { label: "Active Services", icon: <UserCheck size={16} />, path: "/admin/services?status=active" },
+      { label: "Inactive Services", icon: <UserX size={16} />, path: "/admin/services?status=inactive" },
+    ]
+  },
+  { 
+    label: "Packages", 
+    icon: <Package size={20} />, 
+    children: [
+      { label: "Active Packages", icon: <UserCheck size={16} />, path: "/admin/packages?status=active" },
+      { label: "Inactive Packages", icon: <UserX size={16} />, path: "/admin/packages?status=inactive" },
+    ]
+  },
+  { label: "Inventory", icon: <Boxes size={20} />, path: "/admin/inventory", badge: 5 },
   { label: "Vouchers", icon: <Tag size={20} />, path: "/admin/vouchers" },
   { label: "Payments", icon: <CreditCard size={20} />, path: "/admin/payments", badge: 3 },
-  { label: "Reports", icon: <BarChart2 size={20} />, path: "/admin/reports" },
+  { 
+    label: "Reports", 
+    icon: <BarChart2 size={20} />, 
+    children: [
+      { label: "Sales Report", icon: <DollarSign size={16} />, path: "/admin/reports?type=sales" },
+      { label: "Appointments Report", icon: <Calendar size={16} />, path: "/admin/reports?type=appointments" },
+      { label: "Inventory Report", icon: <Boxes size={16} />, path: "/admin/reports?type=inventory" },
+      { label: "Vouchers Report", icon: <Gift size={16} />, path: "/admin/reports?type=vouchers" },
+      { label: "Active Patients", icon: <UserCheck size={16} />, path: "/admin/reports?type=active-patients" },
+      { label: "Patients Report", icon: <Users size={16} />, path: "/admin/reports?type=patients" },
+      { label: "Services Report", icon: <Scissors size={16} />, path: "/admin/reports?type=services" },
+      { label: "Packages Report", icon: <Sparkles size={16} />, path: "/admin/reports?type=packages" },
+    ]
+  },
   { label: "Blog", icon: <FileText size={20} />, path: "/admin/blog" },
   { label: "Settings", icon: <Settings size={20} />, path: "/admin/settings" },
 ];
