@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Plus, Pencil, X, Upload, Image as ImageIcon } from "lucide-react";
+import { useSearchParams } from "react-router";
+import { Plus, Pencil, X, Upload, Image as ImageIcon, Trash2 } from "lucide-react";
 import { PageWrapper } from "../../components/layout/PageWrapper";
 import { StatusBadge } from "../../components/StatusBadge";
 
@@ -26,12 +27,31 @@ const practitionerMap: Record<string, { color: string; name: string }> = {
 };
 
 export default function ServicesPage() {
+  const [searchParams] = useSearchParams();
+  const statusFilter = searchParams.get("status") || "all";
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [showModal, setShowModal] = useState(false);
   const [editingService, setEditingService] = useState<any>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [servicesList, setServicesList] = useState(services);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [serviceToDelete, setServiceToDelete] = useState<any>(null);
 
-  const filtered = services.filter((s) => categoryFilter === "All" || s.category === categoryFilter);
+  const filtered = servicesList.filter((s) => {
+    // Apply status filter from URL
+    if (statusFilter !== "all" && s.status !== statusFilter) return false;
+    // Apply category filter
+    return categoryFilter === "All" || s.category === categoryFilter;
+  });
+  
+  // Get page title based on status filter
+  const getPageTitle = () => {
+    switch (statusFilter) {
+      case "active": return "Active Services";
+      case "inactive": return "Inactive Services";
+      default: return "Services";
+    }
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -60,8 +80,21 @@ export default function ServicesPage() {
     setEditingService(null);
   };
 
+  const handleDeleteService = (service: any) => {
+    setServiceToDelete(service);
+    setShowConfirmModal(true);
+  };
+
+  const confirmDelete = () => {
+    if (serviceToDelete) {
+      setServicesList(servicesList.filter((s) => s.id !== serviceToDelete.id));
+      setShowConfirmModal(false);
+      setServiceToDelete(null);
+    }
+  };
+
   return (
-    <PageWrapper title="Services" breadcrumb="Admin / Services">
+    <PageWrapper title={getPageTitle()} breadcrumb={`Admin / ${getPageTitle()}`}>
       {/* Toolbar */}
       <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "24px", flexWrap: "wrap" }}>
         <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", flex: 1 }}>
@@ -156,12 +189,21 @@ export default function ServicesPage() {
                     <div style={{ width: "16px", height: "16px", borderRadius: "50%", background: "#FFFFFF", marginLeft: service.status === "active" ? "auto" : "0" }} />
                   </div>
                 </div>
-                <button
-                  onClick={() => handleModalOpen(service)}
-                  style={{ height: "30px", padding: "0 12px", background: "#F0F6FC", border: "1.5px solid #D0E8F5", borderRadius: "6px", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", fontWeight: 500, color: "#5A7A96" }}
-                >
-                  <Pencil size={12} /> Edit
-                </button>
+                <div style={{ display: "flex", gap: "6px" }}>
+                  <button
+                    onClick={() => handleModalOpen(service)}
+                    style={{ height: "30px", padding: "0 12px", background: "#F0F6FC", border: "1.5px solid #D0E8F5", borderRadius: "6px", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", fontWeight: 500, color: "#5A7A96" }}
+                  >
+                    <Pencil size={12} /> Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeleteService(service)}
+                    style={{ height: "30px", width: "30px", padding: "0", background: "#FEE2E2", border: "1.5px solid #FCA5A5", borderRadius: "6px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#DC2626" }}
+                    title="Delete service"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -233,6 +275,29 @@ export default function ServicesPage() {
             <div style={{ padding: "16px 24px", borderTop: "1px solid #D0E8F5", display: "flex", justifyContent: "flex-end", gap: "10px", flexShrink: 0 }}>
               <button onClick={handleModalClose} style={{ height: "38px", padding: "0 20px", background: "none", border: "1.5px solid #D0E8F5", borderRadius: "8px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "14px", color: "#5A7A96" }}>Cancel</button>
               <button style={{ height: "38px", padding: "0 20px", background: "#2D6A9F", border: "none", borderRadius: "8px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "14px", fontWeight: 600, color: "#FFFFFF" }}>Save Service</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showConfirmModal && serviceToDelete && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(26,58,92,0.5)", backdropFilter: "blur(4px)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", padding: "24px" }} onClick={() => setShowConfirmModal(false)}>
+          <div style={{ background: "#FFFFFF", borderRadius: "16px", width: "100%", maxWidth: "400px", boxShadow: "0 8px 32px rgba(26,58,92,0.18)", overflow: "hidden" }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ padding: "24px", textAlign: "center" }}>
+              <div style={{ background: "#FEE2E2", width: "60px", height: "60px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
+                <Trash2 size={28} color="#EF4444" />
+              </div>
+              <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "16px", color: "#1A2E40", marginBottom: "8px" }}>
+                Delete Service?
+              </div>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#5A7A96", marginBottom: "24px" }}>
+                Are you sure you want to delete <strong>"{serviceToDelete.name}"</strong>? This action cannot be undone.
+              </div>
+            </div>
+            <div style={{ padding: "16px 24px", borderTop: "1px solid #D0E8F5", display: "flex", justifyContent: "flex-end", gap: "10px" }}>
+              <button onClick={() => setShowConfirmModal(false)} style={{ height: "38px", padding: "0 20px", background: "none", border: "1.5px solid #D0E8F5", borderRadius: "8px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "14px", color: "#5A7A96" }}>Cancel</button>
+              <button onClick={confirmDelete} style={{ height: "38px", padding: "0 20px", background: "#EF4444", border: "none", borderRadius: "8px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "14px", fontWeight: 600, color: "#FFFFFF" }}>Delete</button>
             </div>
           </div>
         </div>

@@ -3,27 +3,85 @@ import { useNavigate, useLocation } from "react-router";
 import {
   LayoutDashboard, Calendar, Users, UserCog, Scissors,
   Package, Tag, CreditCard, BarChart2, FileText, Settings,
-  ChevronLeft, ChevronRight, LogOut, Bell
+  ChevronLeft, ChevronRight, LogOut, Bell, Archive, UserCheck, UserX,
+  Eye, CheckCircle, Clock, XCircle, Loader, DollarSign, ClipboardList,
+  Boxes, Gift, Activity, Sparkles
 } from "lucide-react";
 import { useApp, UserRole } from "../../context/AppContext";
 
 interface NavItem {
   label: string;
   icon: React.ReactNode;
-  path: string;
+  path?: string;
   badge?: number;
+  children?: NavItem[];
 }
 
 const adminNavItems: NavItem[] = [
   { label: "Dashboard", icon: <LayoutDashboard size={20} />, path: "/admin" },
-  { label: "Appointments", icon: <Calendar size={20} />, path: "/admin/appointments", badge: 12 },
-  { label: "Patients", icon: <Users size={20} />, path: "/admin/patients" },
-  { label: "Staff", icon: <UserCog size={20} />, path: "/admin/staff" },
-  { label: "Services", icon: <Scissors size={20} />, path: "/admin/services" },
-  { label: "Inventory", icon: <Package size={20} />, path: "/admin/inventory", badge: 5 },
+  { 
+    label: "Appointments", 
+    icon: <Calendar size={20} />, 
+    badge: 12,
+    children: [
+      { label: "View Appointments", icon: <Eye size={16} />, path: "/admin/appointments" },
+      { label: "Confirmed", icon: <CheckCircle size={16} />, path: "/admin/appointments?status=confirmed" },
+      { label: "In Progress", icon: <Loader size={16} />, path: "/admin/appointments?status=in-progress" },
+      { label: "Pending", icon: <Clock size={16} />, path: "/admin/appointments?status=pending" },
+      { label: "Cancelled", icon: <XCircle size={16} />, path: "/admin/appointments?status=cancelled" },
+    ]
+  },
+  { 
+    label: "Patients", 
+    icon: <Users size={20} />, 
+    children: [
+      { label: "Active", icon: <UserCheck size={16} />, path: "/admin/patients?status=active" },
+      { label: "Inactive", icon: <UserX size={16} />, path: "/admin/patients?status=inactive" },
+      { label: "Patients Archive", icon: <Archive size={16} />, path: "/admin/patients-archive" }
+    ]
+  },
+  { 
+    label: "Staff", 
+    icon: <UserCog size={20} />, 
+    children: [
+      { label: "Active Staff", icon: <UserCheck size={16} />, path: "/admin/staff?status=active" },
+      { label: "Inactive Staff", icon: <UserX size={16} />, path: "/admin/staff?status=inactive" },
+      { label: "Staff Archive", icon: <Archive size={16} />, path: "/admin/staff-archive" }
+    ]
+  },
+  { 
+    label: "Services", 
+    icon: <Scissors size={20} />, 
+    children: [
+      { label: "Active Services", icon: <UserCheck size={16} />, path: "/admin/services?status=active" },
+      { label: "Inactive Services", icon: <UserX size={16} />, path: "/admin/services?status=inactive" },
+    ]
+  },
+  { 
+    label: "Packages", 
+    icon: <Package size={20} />, 
+    children: [
+      { label: "Active Packages", icon: <UserCheck size={16} />, path: "/admin/packages?status=active" },
+      { label: "Inactive Packages", icon: <UserX size={16} />, path: "/admin/packages?status=inactive" },
+    ]
+  },
+  { label: "Inventory", icon: <Boxes size={20} />, path: "/admin/inventory", badge: 5 },
   { label: "Vouchers", icon: <Tag size={20} />, path: "/admin/vouchers" },
   { label: "Payments", icon: <CreditCard size={20} />, path: "/admin/payments", badge: 3 },
-  { label: "Reports", icon: <BarChart2 size={20} />, path: "/admin/reports" },
+  { 
+    label: "Reports", 
+    icon: <BarChart2 size={20} />, 
+    children: [
+      { label: "Sales Report", icon: <DollarSign size={16} />, path: "/admin/reports?type=sales" },
+      { label: "Appointments Report", icon: <Calendar size={16} />, path: "/admin/reports?type=appointments" },
+      { label: "Inventory Report", icon: <Boxes size={16} />, path: "/admin/reports?type=inventory" },
+      { label: "Vouchers Report", icon: <Gift size={16} />, path: "/admin/reports?type=vouchers" },
+      { label: "Active Patients", icon: <UserCheck size={16} />, path: "/admin/reports?type=active-patients" },
+      { label: "Patients Report", icon: <Users size={16} />, path: "/admin/reports?type=patients" },
+      { label: "Services Report", icon: <Scissors size={16} />, path: "/admin/reports?type=services" },
+      { label: "Packages Report", icon: <Sparkles size={16} />, path: "/admin/reports?type=packages" },
+    ]
+  },
   { label: "Blog", icon: <FileText size={20} />, path: "/admin/blog" },
   { label: "Settings", icon: <Settings size={20} />, path: "/admin/settings" },
 ];
@@ -55,15 +113,42 @@ export function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
   const navItems = getNavItems(currentUser.role);
   const width = sidebarCollapsed ? 64 : 240;
 
-  const isActive = (path: string) => {
+  const isActive = (path?: string) => {
+    if (!path) return false;
+    
+    // Handle paths with query parameters
+    if (path.includes("?")) {
+      const [pathPart, queryPart] = path.split("?");
+      const currentFullPath = location.pathname + location.search;
+      return currentFullPath === path || (location.pathname === pathPart && location.search === "?" + queryPart);
+    }
+    
     if (path === "/admin" || path === "/practitioner" || path === "/reception") {
       return location.pathname === path;
     }
+    
+    // For parent paths without query params, check if current path starts with it
+    // but also check that there's no query param filter active
+    if (location.search && location.pathname.startsWith(path)) {
+      return false; // A sub-item with query param is active, not the parent
+    }
+    
     return location.pathname.startsWith(path);
+  };
+
+  const toggleExpanded = (label: string) => {
+    const newExpanded = new Set(expandedItems);
+    if (newExpanded.has(label)) {
+      newExpanded.delete(label);
+    } else {
+      newExpanded.add(label);
+    }
+    setExpandedItems(newExpanded);
   };
 
   return (
@@ -148,86 +233,164 @@ export function Sidebar() {
       <nav style={{ flex: 1, overflowY: "auto", padding: "8px 0" }}>
         {navItems.map((item) => {
           const active = isActive(item.path);
-          const hovered = hoveredItem === item.path;
+          const hovered = hoveredItem === item.label;
+          const isExpanded = expandedItems.has(item.label);
+          const hasChildren = item.children && item.children.length > 0;
+          
           return (
-            <div
-              key={item.path}
-              onClick={() => navigate(item.path)}
-              onMouseEnter={() => setHoveredItem(item.path)}
-              onMouseLeave={() => setHoveredItem(null)}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                height: "44px",
-                padding: sidebarCollapsed ? "0 22px" : "0 16px",
-                cursor: "pointer",
-                background: active
-                  ? "#2D6A9F"
-                  : hovered
-                  ? "#1E3F61"
-                  : "transparent",
-                borderLeft: active ? "3px solid #5BC0EB" : "3px solid transparent",
-                gap: "12px",
-                position: "relative",
-                transition: "background 100ms",
-              }}
-              title={sidebarCollapsed ? item.label : undefined}
-            >
-              <span
-                style={{
-                  color: active || hovered ? "#FFFFFF" : "#B8D4EC",
-                  flexShrink: 0,
-                  display: "flex",
-                  transition: "color 100ms",
+            <div key={item.label}>
+              <div
+                onClick={() => {
+                  if (hasChildren) {
+                    toggleExpanded(item.label);
+                  } else if (item.path) {
+                    navigate(item.path);
+                  }
                 }}
+                onMouseEnter={() => setHoveredItem(item.label)}
+                onMouseLeave={() => setHoveredItem(null)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  height: "44px",
+                  padding: sidebarCollapsed ? "0 22px" : "0 16px",
+                  cursor: "pointer",
+                  background: active
+                    ? "#2D6A9F"
+                    : hovered
+                    ? "#1E3F61"
+                    : "transparent",
+                  borderLeft: active ? "3px solid #5BC0EB" : "3px solid transparent",
+                  gap: "12px",
+                  position: "relative",
+                  transition: "background 100ms",
+                }}
+                title={sidebarCollapsed ? item.label : undefined}
               >
-                {item.icon}
-              </span>
-              {!sidebarCollapsed && (
-                <>
-                  <span
-                    style={{
-                      fontFamily: "'DM Sans', sans-serif",
-                      fontWeight: 500,
-                      fontSize: "14px",
-                      color: active || hovered ? "#FFFFFF" : "#B8D4EC",
-                      flex: 1,
-                      whiteSpace: "nowrap",
-                      transition: "color 100ms",
-                    }}
-                  >
-                    {item.label}
-                  </span>
-                  {item.badge != null && item.badge > 0 && (
-                    <span
-                      style={{
-                        background: "#EF4444",
-                        color: "#FFFFFF",
-                        fontSize: "11px",
-                        fontFamily: "'DM Sans', sans-serif",
-                        fontWeight: 600,
-                        padding: "1px 7px",
-                        borderRadius: "9999px",
-                        lineHeight: 1.6,
-                      }}
-                    >
-                      {item.badge}
-                    </span>
-                  )}
-                </>
-              )}
-              {sidebarCollapsed && item.badge != null && item.badge > 0 && (
                 <span
                   style={{
-                    position: "absolute",
-                    top: "8px",
-                    right: "8px",
-                    width: "8px",
-                    height: "8px",
-                    background: "#EF4444",
-                    borderRadius: "50%",
+                    color: active || hovered ? "#FFFFFF" : "#B8D4EC",
+                    flexShrink: 0,
+                    display: "flex",
+                    transition: "color 100ms",
                   }}
-                />
+                >
+                  {item.icon}
+                </span>
+                {!sidebarCollapsed && (
+                  <>
+                    <span
+                      style={{
+                        fontFamily: "'DM Sans', sans-serif",
+                        fontWeight: 500,
+                        fontSize: "14px",
+                        color: active || hovered ? "#FFFFFF" : "#B8D4EC",
+                        flex: 1,
+                        whiteSpace: "nowrap",
+                        transition: "color 100ms",
+                      }}
+                    >
+                      {item.label}
+                    </span>
+                    {item.badge != null && item.badge > 0 && (
+                      <span
+                        style={{
+                          background: "#EF4444",
+                          color: "#FFFFFF",
+                          fontSize: "11px",
+                          fontFamily: "'DM Sans', sans-serif",
+                          fontWeight: 600,
+                          padding: "1px 7px",
+                          borderRadius: "9999px",
+                          lineHeight: 1.6,
+                        }}
+                      >
+                        {item.badge}
+                      </span>
+                    )}
+                    {hasChildren && (
+                      <ChevronRight 
+                        size={16} 
+                        style={{ 
+                          transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)",
+                          transition: "transform 200ms",
+                          color: "#B8D4EC"
+                        }} 
+                      />
+                    )}
+                  </>
+                )}
+                {sidebarCollapsed && item.badge != null && item.badge > 0 && (
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: "8px",
+                      right: "8px",
+                      width: "8px",
+                      height: "8px",
+                      background: "#EF4444",
+                      borderRadius: "50%",
+                    }}
+                  />
+                )}
+              </div>
+
+              {/* Submenu Items */}
+              {hasChildren && isExpanded && !sidebarCollapsed && (
+                <div style={{ background: "rgba(0,0,0,0.2)" }}>
+                  {item.children!.map((child) => {
+                    const childActive = isActive(child.path);
+                    const childHovered = hoveredItem === child.path;
+                    return (
+                      <div
+                        key={child.path}
+                        onClick={() => navigate(child.path!)}
+                        onMouseEnter={() => setHoveredItem(child.path!)}
+                        onMouseLeave={() => setHoveredItem(null)}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          height: "40px",
+                          paddingLeft: "48px",
+                          paddingRight: "16px",
+                          cursor: "pointer",
+                          background: childActive
+                            ? "#1E3F61"
+                            : childHovered
+                            ? "#254d70"
+                            : "transparent",
+                          borderLeft: childActive ? "3px solid #5BC0EB" : "3px solid transparent",
+                          gap: "12px",
+                          transition: "background 100ms",
+                        }}
+                      >
+                        <span
+                          style={{
+                            color: childActive || childHovered ? "#FFFFFF" : "#A0C4E0",
+                            flexShrink: 0,
+                            display: "flex",
+                            transition: "color 100ms",
+                          }}
+                        >
+                          {child.icon}
+                        </span>
+                        <span
+                          style={{
+                            fontFamily: "'DM Sans', sans-serif",
+                            fontWeight: 400,
+                            fontSize: "13px",
+                            color: childActive || childHovered ? "#FFFFFF" : "#A0C4E0",
+                            flex: 1,
+                            whiteSpace: "nowrap",
+                            transition: "color 100ms",
+                          }}
+                        >
+                          {child.label}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
               )}
             </div>
           );
