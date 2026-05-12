@@ -117,18 +117,6 @@ export default function InventoryPage() {
           </button>
         </div>
       </div>
-        <button
-          onClick={() => setShowLowOnly(!showLowOnly)}
-          style={{ height: "40px", padding: "0 16px", background: showLowOnly ? "#FEF3C7" : "#FFFFFF", border: `1.5px solid ${showLowOnly ? "#F59E0B" : "#D0E8F5"}`, borderRadius: "8px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", fontWeight: 500, color: showLowOnly ? "#D97706" : "#5A7A96", display: "flex", alignItems: "center", gap: "6px" }}
-        >
-          <AlertTriangle size={14} /> Low Stock Only
-        </button>
-        <div style={{ marginLeft: "auto" }}>
-          <button style={{ height: "40px", padding: "0 18px", background: "#2D6A9F", border: "none", borderRadius: "8px", color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", fontWeight: 600 }}>
-            <Plus size={14} /> Add Item
-          </button>
-        </div>
-      </div>
 
       {/* Table */}
       <div style={{ background: "#FFFFFF", borderRadius: "12px", boxShadow: "0 1px 4px rgba(26,58,92,0.08)", overflow: "hidden" }}>
