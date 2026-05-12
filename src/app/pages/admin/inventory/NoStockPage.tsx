@@ -91,7 +91,6 @@ export default function NoStockPage() {
             <Plus size={14} /> Add Item
           </button>
         </div>
-        </button>
       </div>
 
       {/* Table */}
