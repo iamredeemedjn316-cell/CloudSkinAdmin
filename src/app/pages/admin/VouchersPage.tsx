@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Search, Plus, Pencil, Eye, RefreshCw, X, Copy, Check } from "lucide-react";
+import { Search, Plus, Eye, RefreshCw, X, Copy, Check, MoreVertical, Archive, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router";
 import { PageWrapper } from "../../components/layout/PageWrapper";
 import { StatusBadge } from "../../components/StatusBadge";
 
@@ -78,12 +79,12 @@ function generateUniqueCode(prefix: string, index: number): string {
 }
 
 export default function VouchersPage() {
+  const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState("All");
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [showDetailModal, setShowDetailModal] = useState(false);
-  const [selectedBatch, setSelectedBatch] = useState<VoucherBatch | null>(null);
   const [editingVoucher, setEditingVoucher] = useState<VoucherBatch | null>(null);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [discountType, setDiscountType] = useState<"percentage" | "fixed">("percentage");
   const [campaignName, setCampaignName] = useState("");
   const [quantity, setQuantity] = useState(10);
@@ -130,8 +131,19 @@ export default function VouchersPage() {
   };
 
   const handleViewDetails = (batch: VoucherBatch) => {
-    setSelectedBatch(batch);
-    setShowDetailModal(true);
+    navigate(`/admin/vouchers/${batch.id}`);
+  };
+
+  const handleArchive = (batch: VoucherBatch) => {
+    console.log("[v0] Archiving voucher batch:", batch.id);
+    setOpenMenuId(null);
+  };
+
+  const handleDelete = (batch: VoucherBatch) => {
+    if (confirm(`Are you sure you want to delete "${batch.name}" campaign?`)) {
+      console.log("[v0] Deleting voucher batch:", batch.id);
+      setOpenMenuId(null);
+    }
   };
 
   return (
@@ -164,7 +176,7 @@ export default function VouchersPage() {
           <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "900px" }}>
             <thead>
               <tr style={{ background: "#F0F6FC" }}>
-                {["Campaign Name", "Discount", "Eligible Services", "Expiry Date", "Codes Generated", "Used / Total", "Status", "Actions"].map((h) => (
+                {["Campaign Name", "Discount", "Eligible Services", "Expiry Date", "Codes Generated", "Used / Total", "Status", "Action"].map((h) => (
                   <th key={h} style={{ padding: "10px 16px", textAlign: "left", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "#5A7A96", letterSpacing: "0.06em", textTransform: "uppercase", borderBottom: "1px solid #D0E8F5", whiteSpace: "nowrap" }}>{h}</th>
                 ))}
               </tr>
@@ -211,13 +223,104 @@ export default function VouchersPage() {
                     </td>
                     <td style={{ padding: "14px 16px" }}><StatusBadge status={batch.status as any} /></td>
                     <td style={{ padding: "14px 16px" }}>
-                      <div style={{ display: "flex", gap: "6px" }}>
-                        <button onClick={() => handleViewDetails(batch)} style={{ width: "28px", height: "28px", background: "#F0F6FC", border: "none", borderRadius: "6px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#2D6A9F" }} title="View Codes">
+                      <div style={{ display: "flex", gap: "6px", position: "relative" }}>
+                        <button
+                          onClick={() => handleViewDetails(batch)}
+                          style={{
+                            width: "28px",
+                            height: "28px",
+                            background: "#F0F6FC",
+                            border: "none",
+                            borderRadius: "6px",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            color: "#2D6A9F",
+                          }}
+                          title="View Voucher Details"
+                        >
                           <Eye size={13} />
                         </button>
-                        <button onClick={() => handleEditVoucher(batch)} style={{ width: "28px", height: "28px", background: "#F0F6FC", border: "none", borderRadius: "6px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#5A7A96" }} title="Edit">
-                          <Pencil size={13} />
-                        </button>
+
+                        {/* Dropdown Menu */}
+                        <div style={{ position: "relative" }}>
+                          <button
+                            onClick={() => setOpenMenuId(openMenuId === batch.id ? null : batch.id)}
+                            style={{
+                              width: "28px",
+                              height: "28px",
+                              background: "#F0F6FC",
+                              border: "none",
+                              borderRadius: "6px",
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              color: "#5A7A96",
+                            }}
+                            title="More Actions"
+                          >
+                            <MoreVertical size={13} />
+                          </button>
+
+                          {openMenuId === batch.id && (
+                            <div
+                              style={{
+                                position: "absolute",
+                                top: "100%",
+                                right: 0,
+                                background: "#FFFFFF",
+                                border: "1px solid #D0E8F5",
+                                borderRadius: "8px",
+                                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                                zIndex: 100,
+                                minWidth: "140px",
+                                marginTop: "4px",
+                              }}
+                            >
+                              <button
+                                onClick={() => handleArchive(batch)}
+                                style={{
+                                  width: "100%",
+                                  padding: "10px 16px",
+                                  background: "none",
+                                  border: "none",
+                                  textAlign: "left",
+                                  fontFamily: "'Inter', sans-serif",
+                                  fontSize: "13px",
+                                  color: "#F59E0B",
+                                  cursor: "pointer",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "8px",
+                                  borderBottom: "1px solid #D0E8F5",
+                                }}
+                              >
+                                <Archive size={14} /> Archive
+                              </button>
+                              <button
+                                onClick={() => handleDelete(batch)}
+                                style={{
+                                  width: "100%",
+                                  padding: "10px 16px",
+                                  background: "none",
+                                  border: "none",
+                                  textAlign: "left",
+                                  fontFamily: "'Inter', sans-serif",
+                                  fontSize: "13px",
+                                  color: "#DC2626",
+                                  cursor: "pointer",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "8px",
+                                }}
+                              >
+                                <Trash2 size={14} /> Delete
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </td>
                   </tr>
