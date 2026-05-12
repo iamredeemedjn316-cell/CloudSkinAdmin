@@ -46,9 +46,7 @@ export default function LowStockPage() {
 
       {/* Stat Cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "20px", marginBottom: "24px" }}>
-        <StatCard label="Low Stock Items" value={lowStockItems.length} icon={<AlertTriangle size={18} />} variant="warning" />
-        <StatCard label="Very Low Stock" value={veryLowStockCount} icon={<AlertTriangle size={18} />} variant="danger" />
-        <StatCard label="Total Inventory" value={allInventory.length} icon={<Package size={18} />} delta={{ value: "All items", positive: true }} />
+        <StatCard label="Low Stock Items" value={filtered.length} icon={<AlertTriangle size={18} />} variant="warning" />
       </div>
 
       {/* Toolbar */}

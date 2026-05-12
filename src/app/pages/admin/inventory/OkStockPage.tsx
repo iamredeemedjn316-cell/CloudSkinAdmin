@@ -36,8 +36,7 @@ export default function OkStockPage() {
 
       {/* Stat Cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "20px", marginBottom: "24px" }}>
-        <StatCard label="OK Stock Items" value={allInventory.length} icon={<CheckCircle size={18} />} variant="success" />
-        <StatCard label="Total Inventory" value={10} icon={<Package size={18} />} delta={{ value: "All items", positive: true }} />
+        <StatCard label="OK Stock Items" value={filtered.length} icon={<CheckCircle size={18} />} variant="success" />
       </div>
 
       {/* Toolbar */}

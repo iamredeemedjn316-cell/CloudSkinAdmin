@@ -51,9 +51,9 @@ export default function VeryLowStockPage() {
         <div style={{ overflowX: "auto" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "900px" }}>
             <thead>
-              <tr style={{ background: "#FEE2E2" }}>
+              <tr style={{ background: "#F0F6FC" }}>
                 {["Item Name", "SKU", "Category", "Stock", "Threshold", "Purchase Price", "Primary Supplier", "Status"].map((h) => (
-                  <th key={h} style={{ padding: "10px 16px", textAlign: "left", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "#991B1B", letterSpacing: "0.06em", textTransform: "uppercase", borderBottom: "2px solid #DC2626", whiteSpace: "nowrap" }}>
+                  <th key={h} style={{ padding: "10px 16px", textAlign: "left", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "#5A7A96", letterSpacing: "0.06em", textTransform: "uppercase", borderBottom: "1px solid #D0E8F5", whiteSpace: "nowrap" }}>
                     {h}
                   </th>
                 ))}
@@ -63,7 +63,7 @@ export default function VeryLowStockPage() {
               {filtered.map((item) => {
                 const stockStatus = getStockStatus(item.stock, item.threshold);
                 return (
-                  <tr key={item.id} style={{ borderBottom: "1px solid #D0E8F5", background: "#FEF2F2" }} onMouseEnter={(e) => (e.currentTarget.style.background = "#FEE2E2")} onMouseLeave={(e) => (e.currentTarget.style.background = "#FEF2F2")}>
+                  <tr key={item.id} style={{ borderBottom: "1px solid #D0E8F5" }} onMouseEnter={(e) => (e.currentTarget.style.background = "#F8FBFF")} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
                     <td style={{ padding: "14px 16px", fontFamily: "'Inter', sans-serif", fontSize: "13px", fontWeight: 500, color: "#1A2E40" }}>
                       {item.name}
                     </td>

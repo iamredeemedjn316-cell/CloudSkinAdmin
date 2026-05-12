@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Search, Plus, Pencil, History, X, AlertTriangle, Package, MoreVertical, Download, Upload, TrendingUp, TrendingDown } from "lucide-react";
+import { Search, Plus, Pencil, History, X, AlertTriangle, Package, MoreVertical, Download, Upload, TrendingUp, TrendingDown, CheckCircle, Ban } from "lucide-react";
 import { PageWrapper } from "../../components/layout/PageWrapper";
 import { StatCard } from "../../components/StatCard";
 import StockAdjustmentModal from "../../components/inventory/StockAdjustmentModal";
@@ -39,6 +39,9 @@ export default function InventoryPage() {
 
   const lowCount = inventory.filter((i) => i.stock > 0 && i.stock <= i.threshold).length;
   const outCount = inventory.filter((i) => i.stock === 0).length;
+  const fullStockCount = inventory.filter((i) => i.stock > i.threshold * 1.5).length;
+  const okStockCount = inventory.filter((i) => i.stock > i.threshold && i.stock <= i.threshold * 1.5).length;
+  const veryLowCount = inventory.filter((i) => i.stock > 0 && i.stock < i.threshold * 0.3).length;
 
   const filtered = inventory.filter((item) => {
     const matchSearch = item.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -79,15 +82,13 @@ export default function InventoryPage() {
   return (
     <PageWrapper title="Inventory" breadcrumb="Admin / Inventory">
       {/* Stat Cards */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "20px", marginBottom: "24px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "20px", marginBottom: "24px" }}>
         <StatCard label="Total Items" value={inventory.length} icon={<Package size={18} />} delta={{ value: "All categories", positive: true }} />
-        <StatCard label="Low Stock Items" value={lowCount} icon={<AlertTriangle size={18} />} variant="warning" />
-        <StatCard
-          label="Out of Stock"
-          value={outCount}
-          icon={<Package size={18} />}
-          delta={{ value: "Needs restock", positive: false }}
-        />
+        <StatCard label="Full Stock" value={fullStockCount} icon={<CheckCircle size={18} />} variant="success" />
+        <StatCard label="OK Stock" value={okStockCount} icon={<CheckCircle size={18} />} variant="info" />
+        <StatCard label="Low Stock" value={lowCount} icon={<AlertTriangle size={18} />} variant="warning" />
+        <StatCard label="Very Low Stock" value={veryLowCount} icon={<AlertTriangle size={18} />} variant="warning" />
+        <StatCard label="No Stock" value={outCount} icon={<Ban size={18} />} variant="danger" />
       </div>
 
       {/* Toolbar */}

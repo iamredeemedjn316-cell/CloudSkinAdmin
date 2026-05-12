@@ -34,8 +34,7 @@ export default function FullStockPage() {
 
       {/* Stat Cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "20px", marginBottom: "24px" }}>
-        <StatCard label="Full Stock Items" value={fullStockItems.length} icon={<CheckCircle size={18} />} variant="success" />
-        <StatCard label="Total Inventory" value={allInventory.length} icon={<Package size={18} />} delta={{ value: "All items", positive: true }} />
+        <StatCard label="Full Stock Items" value={filtered.length} icon={<CheckCircle size={18} />} variant="success" />
       </div>
 
       {/* Toolbar */}
