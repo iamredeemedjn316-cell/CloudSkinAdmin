@@ -26,6 +26,9 @@ import PackageDetailsPage from "./pages/admin/PackageDetailsPage";
 import PackagesArchivePage from "./pages/admin/PackagesArchivePage";
 import InventoryPage from "./pages/admin/InventoryPage";
 import LowStockPage from "./pages/admin/inventory/LowStockPage";
+import OkStockPage from "./pages/admin/inventory/OkStockPage";
+import VeryLowStockPage from "./pages/admin/inventory/VeryLowStockPage";
+import NoStockPage from "./pages/admin/inventory/NoStockPage";
 import VouchersPage from "./pages/admin/VouchersPage";
 import PaymentsPage from "./pages/admin/PaymentsPage";
 import ReportsPage from "./pages/admin/ReportsPage";
@@ -74,11 +77,11 @@ export const router = createBrowserRouter([
       { path: "packages/:packageId", element: <PackageDetailsPage /> },
       { path: "packages-archive", element: <PackagesArchivePage /> },
       { path: "inventory", element: <InventoryPage /> },
+      { path: "inventory/full-stock", element: <OkStockPage /> },
+      { path: "inventory/ok-stock", element: <OkStockPage /> },
       { path: "inventory/low-stock", element: <LowStockPage /> },
-      { path: "inventory/full-stock", element: <InventoryPage /> },
-      { path: "inventory/ok-stock", element: <InventoryPage /> },
-      { path: "inventory/very-low-stock", element: <LowStockPage /> },
-      { path: "inventory/no-stock", element: <InventoryPage /> },
+      { path: "inventory/very-low-stock", element: <VeryLowStockPage /> },
+      { path: "inventory/no-stock", element: <NoStockPage /> },
       { path: "inventory/suppliers", element: <InventoryPage /> },
       { path: "inventory/purchase-orders", element: <InventoryPage /> },
       { path: "inventory/audit-logs", element: <InventoryPage /> },
