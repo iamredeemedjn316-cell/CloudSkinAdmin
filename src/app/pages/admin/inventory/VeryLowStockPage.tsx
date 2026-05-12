@@ -92,8 +92,6 @@ export default function VeryLowStockPage() {
             <Plus size={14} /> Add Item
           </button>
         </div>
-          <Plus size={14} /> Emergency Restock
-        </button>
       </div>
 
       {/* Table */}
