@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { PageWrapper } from "../../../components/layout/PageWrapper";
 import { StatCard } from "../../../components/StatCard";
-import { Search, Plus, AlertCircle } from "lucide-react";
+import { Search, Plus, AlertCircle, Download } from "lucide-react";
 
 const allInventory = [
   { id: "INV005", name: "Botox (50u)", sku: "INJ-001", category: "Injectable", unit: "vial", stock: 8, threshold: 10, maxCapacity: 20, purchasePrice: 250, sellingPrice: 750, expiryDate: "2026-06-30", primarySupplier: "Derma Solutions Inc" },
@@ -17,6 +17,7 @@ function getStockStatus(stock: number, threshold: number) {
 
 export default function VeryLowStockPage() {
   const [search, setSearch] = useState("");
+  const [costingMethod, setCostingMethod] = useState<"latest" | "average">("latest");
 
   const filtered = allInventory.filter((item) => {
     const matchSearch = item.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -37,7 +38,60 @@ export default function VeryLowStockPage() {
           <Search size={14} style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: "#9BBAD4" }} />
           <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search items or SKU..." style={{ width: "100%", height: "40px", border: "1.5px solid #D0E8F5", borderRadius: "8px", padding: "0 12px 0 32px", fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#1A2E40", outline: "none", background: "#FFFFFF", boxSizing: "border-box" }} />
         </div>
-        <button style={{ height: "40px", padding: "0 18px", background: "#DC2626", border: "none", borderRadius: "8px", color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", fontWeight: 600 }}>
+
+        {/* Costing Method Toggle */}
+        <div style={{ display: "flex", gap: "4px", background: "#F0F6FC", border: "1.5px solid #D0E8F5", borderRadius: "8px", padding: "4px" }}>
+          <button
+            onClick={() => setCostingMethod("latest")}
+            style={{
+              height: "32px",
+              padding: "0 12px",
+              background: costingMethod === "latest" ? "#2D6A9F" : "transparent",
+              border: "none",
+              borderRadius: "6px",
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: "12px",
+              fontWeight: 600,
+              color: costingMethod === "latest" ? "#FFFFFF" : "#5A7A96",
+              cursor: "pointer",
+            }}
+          >
+            Latest Cost
+          </button>
+          <button
+            onClick={() => setCostingMethod("average")}
+            style={{
+              height: "32px",
+              padding: "0 12px",
+              background: costingMethod === "average" ? "#2D6A9F" : "transparent",
+              border: "none",
+              borderRadius: "6px",
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: "12px",
+              fontWeight: 600,
+              color: costingMethod === "average" ? "#FFFFFF" : "#5A7A96",
+              cursor: "pointer",
+            }}
+          >
+            Average Cost
+          </button>
+        </div>
+
+        <div style={{ marginLeft: "auto", display: "flex", gap: "12px" }}>
+          <button
+            style={{ height: "40px", padding: "0 16px", background: "#F0F6FC", border: "1.5px solid #D0E8F5", borderRadius: "8px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", fontWeight: 600, color: "#2D6A9F", display: "flex", alignItems: "center", gap: "6px" }}
+          >
+            <Plus size={14} /> New PO
+          </button>
+          <button
+            style={{ height: "40px", padding: "0 16px", background: "#F0F6FC", border: "1.5px solid #D0E8F5", borderRadius: "8px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", fontWeight: 600, color: "#2D6A9F", display: "flex", alignItems: "center", gap: "6px" }}
+          >
+            <Download size={14} /> Import/Export
+          </button>
+          <button style={{ height: "40px", padding: "0 18px", background: "#2D6A9F", border: "none", borderRadius: "8px", color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", fontWeight: 600 }}>
+            <Plus size={14} /> Add Item
+          </button>
+        </div>
           <Plus size={14} /> Emergency Restock
         </button>
       </div>
