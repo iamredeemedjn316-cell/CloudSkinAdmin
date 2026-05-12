@@ -65,8 +65,10 @@ const adminNavItems: NavItem[] = [
     label: "Packages", 
     icon: <Package size={20} />, 
     children: [
+      { label: "View All Packages", icon: <Eye size={16} />, path: "/admin/packages/all" },
       { label: "Active Packages", icon: <UserCheck size={16} />, path: "/admin/packages?status=active" },
       { label: "Inactive Packages", icon: <UserX size={16} />, path: "/admin/packages?status=inactive" },
+      { label: "Archive Packages", icon: <Archive size={16} />, path: "/admin/packages-archive" }
     ]
   },
   { label: "Inventory", icon: <Boxes size={20} />, path: "/admin/inventory", badge: 5 },
