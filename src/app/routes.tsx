@@ -10,11 +10,15 @@ import InProgressAppointmentsPage from "./pages/admin/InProgressAppointmentsPage
 import PendingAppointmentsPage from "./pages/admin/PendingAppointmentsPage";
 import CancelledAppointmentsPage from "./pages/admin/CancelledAppointmentsPage";
 import PatientsPage from "./pages/admin/PatientsPage";
+import ViewAllPatientsPage from "./pages/admin/ViewAllPatientsPage";
 import PatientProfilePage from "./pages/admin/PatientProfilePage";
 import PatientsArchivePage from "./pages/admin/PatientsArchivePage";
 import StaffPage from "./pages/admin/StaffPage";
+import ViewAllStaffPage from "./pages/admin/ViewAllStaffPage";
 import StaffArchivePage from "./pages/admin/StaffArchivePage";
 import ServicesPage from "./pages/admin/ServicesPage";
+import ViewAllServicesPage from "./pages/admin/ViewAllServicesPage";
+import ServicesArchivePage from "./pages/admin/ServicesArchivePage";
 import PackagesPage from "./pages/admin/PackagesPage";
 import InventoryPage from "./pages/admin/InventoryPage";
 import VouchersPage from "./pages/admin/VouchersPage";
@@ -50,11 +54,15 @@ export const router = createBrowserRouter([
       { path: "appointments/pending", element: <PendingAppointmentsPage /> },
       { path: "appointments/cancelled", element: <CancelledAppointmentsPage /> },
       { path: "patients", element: <PatientsPage /> },
+      { path: "patients/all", element: <ViewAllPatientsPage /> },
       { path: "patients/:patientId", element: <PatientProfilePage /> },
       { path: "patients-archive", element: <PatientsArchivePage /> },
       { path: "staff", element: <StaffPage /> },
+      { path: "staff/all", element: <ViewAllStaffPage /> },
       { path: "staff-archive", element: <StaffArchivePage /> },
       { path: "services", element: <ServicesPage /> },
+      { path: "services/all", element: <ViewAllServicesPage /> },
+      { path: "services-archive", element: <ServicesArchivePage /> },
       { path: "packages", element: <PackagesPage /> },
       { path: "inventory", element: <InventoryPage /> },
       { path: "vouchers", element: <VouchersPage /> },

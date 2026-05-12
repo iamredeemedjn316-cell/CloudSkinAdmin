@@ -35,15 +35,17 @@ const adminNavItems: NavItem[] = [
     label: "Patients", 
     icon: <Users size={20} />, 
     children: [
-      { label: "Active", icon: <UserCheck size={16} />, path: "/admin/patients?status=active" },
-      { label: "Inactive", icon: <UserX size={16} />, path: "/admin/patients?status=inactive" },
-      { label: "Patients Archive", icon: <Archive size={16} />, path: "/admin/patients-archive" }
+      { label: "View All Patients", icon: <Eye size={16} />, path: "/admin/patients/all" },
+      { label: "Active Patients", icon: <UserCheck size={16} />, path: "/admin/patients?status=active" },
+      { label: "Inactive Patients", icon: <UserX size={16} />, path: "/admin/patients?status=inactive" },
+      { label: "Archive Patients", icon: <Archive size={16} />, path: "/admin/patients-archive" }
     ]
   },
   { 
     label: "Staff", 
     icon: <UserCog size={20} />, 
     children: [
+      { label: "View All Staff", icon: <Eye size={16} />, path: "/admin/staff/all" },
       { label: "Active Staff", icon: <UserCheck size={16} />, path: "/admin/staff?status=active" },
       { label: "Inactive Staff", icon: <UserX size={16} />, path: "/admin/staff?status=inactive" },
       { label: "Staff Archive", icon: <Archive size={16} />, path: "/admin/staff-archive" }
@@ -53,8 +55,10 @@ const adminNavItems: NavItem[] = [
     label: "Services", 
     icon: <Scissors size={20} />, 
     children: [
+      { label: "View All Services", icon: <Eye size={16} />, path: "/admin/services/all" },
       { label: "Active Services", icon: <UserCheck size={16} />, path: "/admin/services?status=active" },
       { label: "Inactive Services", icon: <UserX size={16} />, path: "/admin/services?status=inactive" },
+      { label: "Archive Services", icon: <Archive size={16} />, path: "/admin/services-archive" }
     ]
   },
   { 
