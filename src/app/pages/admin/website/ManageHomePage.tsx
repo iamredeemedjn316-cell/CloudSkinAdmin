@@ -31,8 +31,22 @@ interface SignatureTreatmentSection {
   featuredServices: FeaturedService[];
 }
 
+interface WhyCloudSkinItem {
+  id: string;
+  iconName: string;
+  subtitle: string;
+  description: string;
+}
+
+interface WhyCloudSkinSection {
+  title: string;
+  description: string;
+  image: string;
+  items: WhyCloudSkinItem[];
+}
+
 export default function ManageHomePage() {
-  const [activeTab, setActiveTab] = useState<"hero" | "treatments">("hero");
+  const [activeTab, setActiveTab] = useState<"hero" | "treatments" | "whyCloudSkin">("hero");
   const [searchQuery, setSearchQuery] = useState("");
   const [showServiceSearch, setShowServiceSearch] = useState(false);
   
@@ -67,21 +81,17 @@ export default function ManageHomePage() {
     ]
   });
 
-  const handleHeroTitleChange = (value: string) => {
-    setHeroSection({ ...heroSection, title: value });
-  };
-
-  const handleHeroDescriptionChange = (value: string) => {
-    setHeroSection({ ...heroSection, description: value });
-  };
-
-  const handleFeatureUpdate = (featureId: string, field: string, value: string) => {
-    setHeroSection({
-      ...heroSection,
-      features: heroSection.features.map(f =>
-        f.id === featureId ? { ...f, [field]: value } : f
-      )
-    });
+  const [whyCloudSkinSection, setWhyCloudSkinSection] = useState<WhyCloudSkinSection>({
+    title: "Why Cloud Skin Clinic",
+    description: "At Cloud Skin Clinic, we combine the latest aesthetic technology with genuine care for your wellbeing. Every treatment is backed by science and delivered by licensed professionals.",
+    image: "",
+    items: [
+      { id: "1", iconName: "flask", subtitle: "Evidence-Based Treatments", description: "Every procedure we offer is clinically proven and approved by dermatology standards." },
+      { id: "2", iconName: "checkmark", subtitle: "Licensed Aesthetic Practitioners", description: "Our team of doctors and nurses are fully certified in aesthetic medicine." },
+      { id: "3", iconName: "arrow", subtitle: "Premium Medical-Grade Products", description: "We use only the highest quality, medical-grade skincare products and equipment." },
+      { id: "4", iconName: "clipboard", subtitle: "Personalized Skin Assessments", description: "Every client receives a thorough skin analysis before any treatment begins." },
+    ]
+  });
   };
 
   const handleTreatmentTitleChange = (value: string) => {
@@ -121,8 +131,17 @@ export default function ManageHomePage() {
   };
 
   const handleSaveChanges = () => {
-    console.log("[v0] Saving homepage changes:", { heroSection, treatmentSection });
+    console.log("[v0] Saving homepage changes:", { heroSection, treatmentSection, whyCloudSkinSection });
     alert("Changes saved successfully!");
+  };
+
+  const handleWhyCloudSkinItemUpdate = (itemId: string, field: string, value: string) => {
+    setWhyCloudSkinSection({
+      ...whyCloudSkinSection,
+      items: whyCloudSkinSection.items.map(item =>
+        item.id === itemId ? { ...item, [field]: value } : item
+      )
+    });
   };
 
   return (
@@ -136,11 +155,12 @@ export default function ManageHomePage() {
       <div style={{ display: "flex", gap: "8px", marginBottom: "24px", borderBottom: "1px solid #D0E8F5", paddingBottom: "0" }}>
         {[
           { id: "hero", label: "Hero Section" },
-          { id: "treatments", label: "Signature Treatments" }
+          { id: "treatments", label: "Signature Treatments" },
+          { id: "whyCloudSkin", label: "Why Cloud Skin" }
         ].map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id as "hero" | "treatments")}
+            onClick={() => setActiveTab(tab.id as "hero" | "treatments" | "whyCloudSkin")}
             style={{
               padding: "12px 20px",
               background: activeTab === tab.id ? "#2D6A9F" : "transparent",
@@ -451,6 +471,158 @@ export default function ManageHomePage() {
               )}
 
               <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "#9BBAD4", marginTop: "12px", margin: "12px 0 0 0" }}>Select exactly 3 services to display on the homepage</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Why Cloud Skin Tab */}
+      {activeTab === "whyCloudSkin" && (
+        <div style={{ background: "#FFFFFF", borderRadius: "12px", padding: "24px", marginBottom: "24px", border: "1px solid #D0E8F5" }}>
+          <h2 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "18px", fontWeight: 700, color: "#1A2E40", marginBottom: "20px" }}>Why Cloud Skin Section</h2>
+
+          <div style={{ display: "grid", gap: "20px" }}>
+            {/* Title */}
+            <div>
+              <label style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#1A2E40", marginBottom: "8px" }}>Section Title</label>
+              <input
+                type="text"
+                value={whyCloudSkinSection.title}
+                onChange={(e) => setWhyCloudSkinSection({ ...whyCloudSkinSection, title: e.target.value })}
+                style={{
+                  width: "100%",
+                  height: "40px",
+                  border: "1.5px solid #D0E8F5",
+                  borderRadius: "8px",
+                  padding: "0 12px",
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: "13px",
+                  color: "#1A2E40",
+                  outline: "none",
+                  boxSizing: "border-box",
+                }}
+              />
+            </div>
+
+            {/* Description */}
+            <div>
+              <label style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#1A2E40", marginBottom: "8px" }}>Section Description</label>
+              <textarea
+                value={whyCloudSkinSection.description}
+                onChange={(e) => setWhyCloudSkinSection({ ...whyCloudSkinSection, description: e.target.value })}
+                rows={3}
+                style={{
+                  width: "100%",
+                  border: "1.5px solid #D0E8F5",
+                  borderRadius: "8px",
+                  padding: "10px 12px",
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: "13px",
+                  color: "#1A2E40",
+                  outline: "none",
+                  resize: "vertical",
+                  boxSizing: "border-box",
+                }}
+              />
+            </div>
+
+            {/* Image Upload */}
+            <div>
+              <label style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#1A2E40", marginBottom: "8px" }}>Section Image</label>
+              {whyCloudSkinSection.image ? (
+                <div style={{ position: "relative", width: "100%", height: "200px", background: "#F0F6FC", borderRadius: "8px", overflow: "hidden", border: "1px solid #D0E8F5" }}>
+                  <img src={whyCloudSkinSection.image} alt="Why Cloud Skin" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  <button
+                    onClick={() => setWhyCloudSkinSection({ ...whyCloudSkinSection, image: "" })}
+                    style={{ position: "absolute", top: "8px", right: "8px", width: "32px", height: "32px", background: "#FFFFFF", border: "none", borderRadius: "6px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                  >
+                    <X size={16} color="#DC2626" />
+                  </button>
+                </div>
+              ) : (
+                <div style={{ border: "2px dashed #D0E8F5", borderRadius: "8px", padding: "24px", textAlign: "center", background: "#F8FBFF", cursor: "pointer" }}>
+                  <Upload size={24} style={{ color: "#2D6A9F", margin: "0 auto 8px", display: "block" }} />
+                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#5A7A96", margin: "0" }}>Upload section image</p>
+                </div>
+              )}
+            </div>
+
+            {/* Items */}
+            <div>
+              <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "14px", fontWeight: 700, color: "#1A2E40", marginBottom: "12px" }}>Feature Items (4 items)</h3>
+              <div style={{ display: "grid", gap: "12px" }}>
+                {whyCloudSkinSection.items.map((item) => (
+                  <div key={item.id} style={{ border: "1px solid #D0E8F5", borderRadius: "8px", padding: "14px", background: "#F8FBFF" }}>
+                    {/* Icon Name */}
+                    <div style={{ marginBottom: "10px" }}>
+                      <label style={{ display: "block", fontFamily: "'Inter', sans-serif", fontSize: "11px", fontWeight: 600, color: "#5A7A96", marginBottom: "6px", textTransform: "uppercase" }}>Icon Type</label>
+                      <select
+                        value={item.iconName}
+                        onChange={(e) => handleWhyCloudSkinItemUpdate(item.id, "iconName", e.target.value)}
+                        style={{
+                          width: "100%",
+                          height: "36px",
+                          border: "1px solid #D0E8F5",
+                          borderRadius: "6px",
+                          padding: "0 10px",
+                          fontFamily: "'Inter', sans-serif",
+                          fontSize: "13px",
+                          color: "#1A2E40",
+                          outline: "none",
+                          boxSizing: "border-box",
+                        }}
+                      >
+                        <option value="flask">Flask (Evidence-Based)</option>
+                        <option value="checkmark">Checkmark (Practitioners)</option>
+                        <option value="arrow">Arrow (Products)</option>
+                        <option value="clipboard">Clipboard (Assessments)</option>
+                      </select>
+                    </div>
+
+                    {/* Subtitle */}
+                    <input
+                      type="text"
+                      value={item.subtitle}
+                      onChange={(e) => handleWhyCloudSkinItemUpdate(item.id, "subtitle", e.target.value)}
+                      placeholder="Feature subtitle"
+                      style={{
+                        width: "100%",
+                        height: "36px",
+                        border: "1px solid #D0E8F5",
+                        borderRadius: "6px",
+                        padding: "0 10px",
+                        fontFamily: "'DM Sans', sans-serif",
+                        fontSize: "13px",
+                        fontWeight: 600,
+                        color: "#1A2E40",
+                        marginBottom: "8px",
+                        outline: "none",
+                        boxSizing: "border-box",
+                      }}
+                    />
+
+                    {/* Description */}
+                    <textarea
+                      value={item.description}
+                      onChange={(e) => handleWhyCloudSkinItemUpdate(item.id, "description", e.target.value)}
+                      placeholder="Feature description"
+                      rows={2}
+                      style={{
+                        width: "100%",
+                        border: "1px solid #D0E8F5",
+                        borderRadius: "6px",
+                        padding: "8px 10px",
+                        fontFamily: "'Inter', sans-serif",
+                        fontSize: "13px",
+                        color: "#1A2E40",
+                        outline: "none",
+                        resize: "none",
+                        boxSizing: "border-box",
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
