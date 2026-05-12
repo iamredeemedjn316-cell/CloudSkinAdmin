@@ -92,7 +92,6 @@ export default function ManageHomePage() {
       { id: "4", iconName: "clipboard", subtitle: "Personalized Skin Assessments", description: "Every client receives a thorough skin analysis before any treatment begins." },
     ]
   });
-  };
 
   const handleTreatmentTitleChange = (value: string) => {
     setTreatmentSection({ ...treatmentSection, title: value });
