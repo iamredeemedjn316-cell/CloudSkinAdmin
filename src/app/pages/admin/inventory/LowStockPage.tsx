@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { PageWrapper } from "../../../components/layout/PageWrapper";
 import { StatCard } from "../../../components/StatCard";
-import { StockStatusInfo } from "../../../components/inventory/StockStatusInfo";
 import { Search, Plus, Pencil, History, X, AlertTriangle, Package, CheckCircle } from "lucide-react";
 
 const allInventory = [
@@ -41,9 +40,6 @@ export default function LowStockPage() {
 
   return (
     <PageWrapper title="Low Stock Items" subtitle="Items that need to be restocked soon">
-      {/* Stock Status Info Card */}
-      <StockStatusInfo status="low" itemCount={lowStockItems.length} />
-
       {/* Stat Cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "20px", marginBottom: "24px" }}>
         <StatCard label="Low Stock Items" value={filtered.length} icon={<AlertTriangle size={18} />} variant="warning" />

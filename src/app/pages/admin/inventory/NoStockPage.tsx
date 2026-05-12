@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { PageWrapper } from "../../../components/layout/PageWrapper";
 import { StatCard } from "../../../components/StatCard";
-import { StockStatusInfo } from "../../../components/inventory/StockStatusInfo";
 import { Search, Plus, Ban } from "lucide-react";
 
 const allInventory = [
@@ -26,9 +25,6 @@ export default function NoStockPage() {
 
   return (
     <PageWrapper title="Out of Stock Items" subtitle="Items that are completely depleted">
-      {/* Stock Status Info Card */}
-      <StockStatusInfo status="noStock" itemCount={allInventory.length} />
-
       {/* Stat Cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "20px", marginBottom: "24px" }}>
         <StatCard label="Out of Stock Items" value={allInventory.length} icon={<Ban size={18} />} variant="danger" />
