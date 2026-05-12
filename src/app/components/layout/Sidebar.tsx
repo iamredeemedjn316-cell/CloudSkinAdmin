@@ -24,11 +24,11 @@ const adminNavItems: NavItem[] = [
     icon: <Calendar size={20} />, 
     badge: 12,
     children: [
-      { label: "View Appointments", icon: <Eye size={16} />, path: "/admin/appointments" },
-      { label: "Confirmed", icon: <CheckCircle size={16} />, path: "/admin/appointments?status=confirmed" },
-      { label: "In Progress", icon: <Loader size={16} />, path: "/admin/appointments?status=in-progress" },
-      { label: "Pending", icon: <Clock size={16} />, path: "/admin/appointments?status=pending" },
-      { label: "Cancelled", icon: <XCircle size={16} />, path: "/admin/appointments?status=cancelled" },
+      { label: "View All", icon: <Eye size={16} />, path: "/admin/appointments/all" },
+      { label: "Confirmed", icon: <CheckCircle size={16} />, path: "/admin/appointments/confirmed" },
+      { label: "In Progress", icon: <Loader size={16} />, path: "/admin/appointments/in-progress" },
+      { label: "Pending", icon: <Clock size={16} />, path: "/admin/appointments/pending" },
+      { label: "Cancelled", icon: <XCircle size={16} />, path: "/admin/appointments/cancelled" },
     ]
   },
   { 

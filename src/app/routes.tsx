@@ -4,6 +4,11 @@ import { AdminLayout, PractitionerLayout, ReceptionLayout } from "./components/l
 import LoginPage from "./pages/LoginPage";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AppointmentsPage from "./pages/admin/AppointmentsPage";
+import ViewAllAppointmentsPage from "./pages/admin/ViewAllAppointmentsPage";
+import ConfirmedAppointmentsPage from "./pages/admin/ConfirmedAppointmentsPage";
+import InProgressAppointmentsPage from "./pages/admin/InProgressAppointmentsPage";
+import PendingAppointmentsPage from "./pages/admin/PendingAppointmentsPage";
+import CancelledAppointmentsPage from "./pages/admin/CancelledAppointmentsPage";
 import PatientsPage from "./pages/admin/PatientsPage";
 import PatientProfilePage from "./pages/admin/PatientProfilePage";
 import PatientsArchivePage from "./pages/admin/PatientsArchivePage";
@@ -39,6 +44,11 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <AdminDashboard /> },
       { path: "appointments", element: <AppointmentsPage /> },
+      { path: "appointments/all", element: <ViewAllAppointmentsPage /> },
+      { path: "appointments/confirmed", element: <ConfirmedAppointmentsPage /> },
+      { path: "appointments/in-progress", element: <InProgressAppointmentsPage /> },
+      { path: "appointments/pending", element: <PendingAppointmentsPage /> },
+      { path: "appointments/cancelled", element: <CancelledAppointmentsPage /> },
       { path: "patients", element: <PatientsPage /> },
       { path: "patients/:patientId", element: <PatientProfilePage /> },
       { path: "patients-archive", element: <PatientsArchivePage /> },
