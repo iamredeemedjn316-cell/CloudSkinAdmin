@@ -25,6 +25,7 @@ import AddPackagePage from "./pages/admin/AddPackagePage";
 import PackageDetailsPage from "./pages/admin/PackageDetailsPage";
 import PackagesArchivePage from "./pages/admin/PackagesArchivePage";
 import InventoryPage from "./pages/admin/InventoryPage";
+import LowStockPage from "./pages/admin/inventory/LowStockPage";
 import VouchersPage from "./pages/admin/VouchersPage";
 import PaymentsPage from "./pages/admin/PaymentsPage";
 import ReportsPage from "./pages/admin/ReportsPage";
@@ -73,6 +74,14 @@ export const router = createBrowserRouter([
       { path: "packages/:packageId", element: <PackageDetailsPage /> },
       { path: "packages-archive", element: <PackagesArchivePage /> },
       { path: "inventory", element: <InventoryPage /> },
+      { path: "inventory/low-stock", element: <LowStockPage /> },
+      { path: "inventory/full-stock", element: <InventoryPage /> },
+      { path: "inventory/ok-stock", element: <InventoryPage /> },
+      { path: "inventory/very-low-stock", element: <LowStockPage /> },
+      { path: "inventory/no-stock", element: <InventoryPage /> },
+      { path: "inventory/suppliers", element: <InventoryPage /> },
+      { path: "inventory/purchase-orders", element: <InventoryPage /> },
+      { path: "inventory/audit-logs", element: <InventoryPage /> },
       { path: "vouchers", element: <VouchersPage /> },
       { path: "payments", element: <PaymentsPage /> },
       { path: "reports", element: <ReportsPage /> },

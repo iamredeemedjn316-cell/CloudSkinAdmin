@@ -5,7 +5,8 @@ import {
   Package, Tag, CreditCard, BarChart2, FileText, Settings,
   ChevronLeft, ChevronRight, LogOut, Bell, Archive, UserCheck, UserX,
   Eye, CheckCircle, Clock, XCircle, Loader, DollarSign, ClipboardList,
-  Boxes, Gift, Activity, Sparkles, MessageSquare, Star
+  Boxes, Gift, Activity, Sparkles, MessageSquare, Star, AlertCircle, AlertTriangle,
+  TrendingDown, Ban
 } from "lucide-react";
 import { useApp, UserRole } from "../../context/AppContext";
 
@@ -71,7 +72,21 @@ const adminNavItems: NavItem[] = [
       { label: "Archive Packages", icon: <Archive size={16} />, path: "/admin/packages-archive" }
     ]
   },
-  { label: "Inventory", icon: <Boxes size={20} />, path: "/admin/inventory", badge: 5 },
+  { 
+    label: "Inventory", 
+    icon: <Boxes size={20} />, 
+    children: [
+      { label: "View All Inventory", icon: <Eye size={16} />, path: "/admin/inventory" },
+      { label: "Full Stock", icon: <CheckCircle size={16} />, path: "/admin/inventory/full-stock" },
+      { label: "OK Stock", icon: <TrendingDown size={16} />, path: "/admin/inventory/ok-stock" },
+      { label: "Low Stock", icon: <AlertTriangle size={16} />, path: "/admin/inventory/low-stock", badge: 5 },
+      { label: "Very Low Stock", icon: <AlertCircle size={16} />, path: "/admin/inventory/very-low-stock" },
+      { label: "No Stock", icon: <Ban size={16} />, path: "/admin/inventory/no-stock" },
+      { label: "Suppliers", icon: <Package size={16} />, path: "/admin/inventory/suppliers" },
+      { label: "Purchase Orders", icon: <ClipboardList size={16} />, path: "/admin/inventory/purchase-orders" },
+      { label: "Audit Logs", icon: <Activity size={16} />, path: "/admin/inventory/audit-logs" }
+    ]
+  },
   { label: "Vouchers", icon: <Tag size={20} />, path: "/admin/vouchers" },
   { label: "Payments", icon: <CreditCard size={20} />, path: "/admin/payments", badge: 3 },
   { 
