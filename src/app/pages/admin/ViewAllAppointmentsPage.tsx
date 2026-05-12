@@ -114,10 +114,8 @@ export default function ViewAllAppointmentsPage() {
         />
       </div>
 
-      {/* Main Layout: Tabs on Left, Analytics on Right */}
-      <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: "24px", alignItems: "start" }}>
-        {/* Tabs Section - Left Side */}
-        <div style={{ background: "#FFFFFF", borderRadius: "12px", boxShadow: "0 1px 4px rgba(26,58,92,0.08)", overflow: "hidden" }}>
+      {/* Main Layout: Tabs Full Width */}
+      <div style={{ background: "#FFFFFF", borderRadius: "12px", boxShadow: "0 1px 4px rgba(26,58,92,0.08)", overflow: "hidden" }}>
         {/* Tab Navigation */}
         <div style={{ display: "flex", borderBottom: "1px solid #D0E8F5", background: "#F8FBFF" }}>
           <button
@@ -463,90 +461,6 @@ export default function ViewAllAppointmentsPage() {
             </div>
           </div>
         )}
-        </div>
-
-        {/* Analytics Section - Right Side */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-          {/* Pie Chart */}
-          <div
-            style={{
-              background: "#FFFFFF",
-              borderRadius: "16px",
-              padding: "24px",
-              boxShadow: "0 1px 4px rgba(26,58,92,0.08)",
-            }}
-          >
-            <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "16px", fontWeight: 600, color: "#1A2E40", marginBottom: "20px" }}>
-              Appointment Distribution
-            </h3>
-            <ResponsiveContainer width="100%" height={250}>
-              <PieChart>
-                <Pie
-                  data={chartData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, value }) => `${name}: ${value}`}
-                  outerRadius={70}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {chartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* Stats Breakdown */}
-          <div
-            style={{
-              background: "#FFFFFF",
-              borderRadius: "16px",
-              padding: "24px",
-              boxShadow: "0 1px 4px rgba(26,58,92,0.08)",
-            }}
-          >
-            <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "16px", fontWeight: 600, color: "#1A2E40", marginBottom: "20px" }}>
-              Appointment Summary
-            </h3>
-            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              {chartData.map((item) => (
-                <div key={item.name} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                    <div
-                      style={{
-                        width: "12px",
-                        height: "12px",
-                        borderRadius: "50%",
-                        background: item.color,
-                      }}
-                    />
-                    <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "14px", color: "#5A7A96" }}>
-                      {item.name}
-                    </span>
-                  </div>
-                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "16px", fontWeight: 600, color: "#1A2E40" }}>
-                    {item.value}
-                  </span>
-                </div>
-              ))}
-              <div style={{ borderTop: "1px solid #D0E8F5", paddingTop: "16px", marginTop: "8px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "14px", fontWeight: 600, color: "#1A2E40" }}>
-                    Total Appointments
-                  </span>
-                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "18px", fontWeight: 700, color: "#2D6A9F" }}>
-                    {appointments.length}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </PageWrapper>
   );
