@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Calendar, CheckCircle, Clock, XCircle, List } from "lucide-react";
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { PageWrapper } from "../../components/layout/PageWrapper";
 import { StatCard } from "../../components/StatCard";
 import AppointmentCalendar from "../../components/appointments/AppointmentCalendar";
 import DayAppointmentsModal from "../../components/appointments/DayAppointmentsModal";
+import AppointmentDetailsModal from "../../components/appointments/AppointmentDetailsModal";
 import { StatusBadge } from "../../components/StatusBadge";
 import { Search, Filter, Download, Eye, Pencil, MoreVertical, ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -49,6 +49,13 @@ export default function ViewAllAppointmentsPage() {
   const [page, setPage] = useState(1);
   const [showDayModal, setShowDayModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+
+  // List view filters
+  const [statusFilter, setStatusFilter] = useState<Set<string>>(new Set(["confirmed", "in-progress", "pending", "cancelled", "completed"]));
+  const [typeFilter, setTypeFilter] = useState<Set<string>>(new Set(["f2f", "online"]));
+  const [paymentFilter, setPaymentFilter] = useState<Set<string>>(new Set(["paid", "unpaid", "pending"]));
 
   // Calculate stats
   const confirmedCount = appointments.filter(a => a.status === "confirmed").length;
@@ -71,7 +78,10 @@ export default function ViewAllAppointmentsPage() {
   const filtered = appointments.filter((a) => {
     const matchSearch = a.client.toLowerCase().includes(search.toLowerCase()) ||
       a.service.toLowerCase().includes(search.toLowerCase());
-    return matchSearch;
+    const matchStatus = statusFilter.has(a.status);
+    const matchType = typeFilter.has(a.type);
+    const matchPayment = paymentFilter.has(a.paymentStatus);
+    return matchSearch && matchStatus && matchType && matchPayment;
   });
 
   const totalPages = Math.ceil(filtered.length / rowsPerPage);
@@ -170,7 +180,10 @@ export default function ViewAllAppointmentsPage() {
             <AppointmentCalendar
               appointments={appointments}
               onDayClick={handleDayClick}
-              onAppointmentClick={(apt) => console.log("Clicked appointment:", apt)}
+              onAppointmentClick={(apt) => {
+                setSelectedAppointment(apt);
+                setShowDetailsModal(true);
+              }}
             />
             {showDayModal && (
               <DayAppointmentsModal
@@ -179,12 +192,96 @@ export default function ViewAllAppointmentsPage() {
                 onClose={() => setShowDayModal(false)}
               />
             )}
+            {showDetailsModal && selectedAppointment && (
+              <AppointmentDetailsModal
+                appointment={selectedAppointment}
+                onClose={() => {
+                  setShowDetailsModal(false);
+                  setSelectedAppointment(null);
+                }}
+              />
+            )}
           </div>
         )}
 
         {/* List Tab */}
         {activeTab === "list" && (
           <div>
+            {/* Filters */}
+            <div style={{ padding: "16px 24px", borderBottom: "1px solid #D0E8F5", background: "#F8FBFF", display: "flex", flexWrap: "wrap", gap: "16px", alignItems: "center" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", fontWeight: 600, color: "#5A7A96" }}>Status:</span>
+                {["confirmed", "in-progress", "pending", "cancelled", "completed"].map((status) => (
+                  <label key={status} style={{ display: "flex", alignItems: "center", gap: "4px", cursor: "pointer", fontSize: "12px" }}>
+                    <input
+                      type="checkbox"
+                      checked={statusFilter.has(status)}
+                      onChange={() => {
+                        const newFilter = new Set(statusFilter);
+                        if (newFilter.has(status)) {
+                          newFilter.delete(status);
+                        } else {
+                          newFilter.add(status);
+                        }
+                        setStatusFilter(newFilter);
+                        setPage(1);
+                      }}
+                      style={{ cursor: "pointer" }}
+                    />
+                    <span style={{ textTransform: "capitalize", color: "#5A7A96" }}>{status.replace("-", " ")}</span>
+                  </label>
+                ))}
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", fontWeight: 600, color: "#5A7A96" }}>Type:</span>
+                {[{ value: "f2f", label: "F2F" }, { value: "online", label: "Online" }].map(({ value, label }) => (
+                  <label key={value} style={{ display: "flex", alignItems: "center", gap: "4px", cursor: "pointer", fontSize: "12px" }}>
+                    <input
+                      type="checkbox"
+                      checked={typeFilter.has(value)}
+                      onChange={() => {
+                        const newFilter = new Set(typeFilter);
+                        if (newFilter.has(value)) {
+                          newFilter.delete(value);
+                        } else {
+                          newFilter.add(value);
+                        }
+                        setTypeFilter(newFilter);
+                        setPage(1);
+                      }}
+                      style={{ cursor: "pointer" }}
+                    />
+                    <span style={{ color: "#5A7A96" }}>{label}</span>
+                  </label>
+                ))}
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", fontWeight: 600, color: "#5A7A96" }}>Payment:</span>
+                {["paid", "unpaid", "pending"].map((status) => (
+                  <label key={status} style={{ display: "flex", alignItems: "center", gap: "4px", cursor: "pointer", fontSize: "12px" }}>
+                    <input
+                      type="checkbox"
+                      checked={paymentFilter.has(status)}
+                      onChange={() => {
+                        const newFilter = new Set(paymentFilter);
+                        if (newFilter.has(status)) {
+                          newFilter.delete(status);
+                        } else {
+                          newFilter.add(status);
+                        }
+                        setPaymentFilter(newFilter);
+                        setPage(1);
+                      }}
+                      style={{ cursor: "pointer" }}
+                    />
+                    <span style={{ textTransform: "capitalize", color: "#5A7A96" }}>{status}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
             {/* Header with Search */}
             <div style={{ padding: "20px 24px", borderBottom: "1px solid #D0E8F5", display: "flex", gap: "12px", alignItems: "center" }}>
               <div style={{ flex: 1, position: "relative" }}>
@@ -193,7 +290,10 @@ export default function ViewAllAppointmentsPage() {
                   type="text"
                   placeholder="Search by client or service..."
                   value={search}
-                  onChange={(e) => setSearch(e.target.value)}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setPage(1);
+                  }}
                   style={{
                     width: "100%",
                     padding: "8px 12px 8px 36px",
@@ -235,6 +335,10 @@ export default function ViewAllAppointmentsPage() {
                       style={{ borderBottom: "1px solid #D0E8F5", cursor: "pointer" }}
                       onMouseEnter={(e) => (e.currentTarget.style.background = "#F8FBFF")}
                       onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                      onClick={() => {
+                        setSelectedAppointment(apt);
+                        setShowDetailsModal(true);
+                      }}
                     >
                       <td style={{ padding: "12px 16px" }}>
                         <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "#9BBAD4" }}>
@@ -461,6 +565,17 @@ export default function ViewAllAppointmentsPage() {
               </div>
             </div>
           </div>
+        )}
+
+        {/* Details Modal - shown from both tabs */}
+        {showDetailsModal && selectedAppointment && (
+          <AppointmentDetailsModal
+            appointment={selectedAppointment}
+            onClose={() => {
+              setShowDetailsModal(false);
+              setSelectedAppointment(null);
+            }}
+          />
         )}
       </div>
     </PageWrapper>
