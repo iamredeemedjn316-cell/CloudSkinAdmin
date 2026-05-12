@@ -6,7 +6,7 @@ import {
   ChevronLeft, ChevronRight, LogOut, Bell, Archive, UserCheck, UserX,
   Eye, CheckCircle, Clock, XCircle, Loader, DollarSign, ClipboardList,
   Boxes, Gift, Activity, Sparkles, MessageSquare, Star, AlertCircle, AlertTriangle,
-  TrendingDown, Ban
+  TrendingDown, Ban, Globe, Home, Info, Image, BookOpen, Megaphone, Mail
 } from "lucide-react";
 import { useApp, UserRole } from "../../context/AppContext";
 
@@ -89,6 +89,19 @@ const adminNavItems: NavItem[] = [
   },
   { label: "Vouchers", icon: <Tag size={20} />, path: "/admin/vouchers" },
   { label: "Payments", icon: <CreditCard size={20} />, path: "/admin/payments", badge: 3 },
+  {
+    label: "Manage Website",
+    icon: <Globe size={20} />,
+    children: [
+      { label: "Manage Home Page", icon: <Home size={16} />, path: "/admin/website/home" },
+      { label: "Manage About Page", icon: <Info size={16} />, path: "/admin/website/about" },
+      { label: "Manage Services Page", icon: <Scissors size={16} />, path: "/admin/website/services" },
+      { label: "Manage Gallery Page", icon: <Image size={16} />, path: "/admin/website/gallery" },
+      { label: "Manage Blog Page", icon: <BookOpen size={16} />, path: "/admin/website/blog" },
+      { label: "Manage Promotions Page", icon: <Megaphone size={16} />, path: "/admin/website/promotions" },
+      { label: "Manage Contact Us Page", icon: <Mail size={16} />, path: "/admin/website/contact" },
+    ]
+  },
   { 
     label: "Reports", 
     icon: <BarChart2 size={20} />, 
