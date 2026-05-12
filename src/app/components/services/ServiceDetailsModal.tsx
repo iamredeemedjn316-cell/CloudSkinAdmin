@@ -196,6 +196,32 @@ export default function ServiceDetailsModal({ service, onClose, onSave, isEditin
             />
           </div>
 
+          <div>
+            <label style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", fontWeight: 600, color: "#1A2E40", display: "block", marginBottom: "6px" }}>
+              Description
+            </label>
+            <textarea
+              name="description"
+              value={formData.description || ""}
+              onChange={handleInputChange}
+              disabled={!isEditMode}
+              placeholder="Enter service description..."
+              style={{
+                width: "100%",
+                padding: "10px 12px",
+                border: "1px solid #D0E8F5",
+                borderRadius: "6px",
+                fontFamily: "'Inter', sans-serif",
+                fontSize: "13px",
+                background: isEditMode ? "#FFFFFF" : "#F8FBFF",
+                color: "#1A2E40",
+                cursor: isEditMode ? "text" : "default",
+                minHeight: "80px",
+                resize: "vertical",
+              }}
+            />
+          </div>
+
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
             <div>
               <label style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", fontWeight: 600, color: "#1A2E40", display: "block", marginBottom: "6px" }}>
