@@ -14,6 +14,7 @@ interface FeaturedService {
   name: string;
   image: string;
   description: string;
+  category: string;
   featured: boolean;
 }
 
@@ -37,12 +38,12 @@ export default function ManageHomePage() {
   
   // Sample services list from your services
   const allServices = [
-    { id: "1", name: "HydraFacial", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-VYNPtgtlFfqkFBjmd6QYuKyv5u3286.png", description: "Deep cleansing, exfoliation, and hydration in one rejuvenating session for all skin types." },
-    { id: "2", name: "Laser Skin Resurfacing", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-VYNPtgtlFfqkFBjmd6QYuKyv5u3286.png", description: "Advanced fractional laser to reduce acne scars, wrinkles, and uneven skin tone." },
-    { id: "3", name: "Skin Whitening IV Drip", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-VYNPtgtlFfqkFBjmd6QYuKyv5u3286.png", description: "Premium intravenous glutathione therapy for a brighter, more radiant complexion." },
-    { id: "4", name: "Botox Treatment", image: "", description: "Minimize fine lines and wrinkles with precision injections." },
-    { id: "5", name: "Chemical Peel", image: "", description: "Advanced peel to rejuvenate and resurface the skin." },
-    { id: "6", name: "Microdermabrasion", image: "", description: "Mechanical exfoliation for smoother, clearer skin." },
+    { id: "1", name: "HydraFacial", category: "Facial", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-md1MqLX2LUGt7awueOBElRDAwdgoaK.png", description: "Deep cleansing, exfoliation, and hydration in one rejuvenating session for all skin types." },
+    { id: "2", name: "Laser Skin Resurfacing", category: "Laser", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-VYNPtgtlFfqkFBjmd6QYuKyv5u3286.png", description: "Advanced fractional laser to reduce acne scars, wrinkles, and uneven skin tone." },
+    { id: "3", name: "Skin Whitening IV Drip", category: "Wellness", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-VYNPtgtlFfqkFBjmd6QYuKyv5u3286.png", description: "Premium intravenous glutathione therapy for a brighter, more radiant complexion." },
+    { id: "4", name: "Botox Treatment", category: "Injectables", image: "", description: "Minimize fine lines and wrinkles with precision injections." },
+    { id: "5", name: "Chemical Peel", category: "Peel", image: "", description: "Advanced peel to rejuvenate and resurface the skin." },
+    { id: "6", name: "Microdermabrasion", category: "Exfoliation", image: "", description: "Mechanical exfoliation for smoother, clearer skin." },
   ];
 
   const [heroSection, setHeroSection] = useState<HeroSection>({
@@ -60,9 +61,9 @@ export default function ManageHomePage() {
     title: "Our Signature Treatments",
     description: "From advanced laser procedures to luxurious skin therapies — each treatment is tailored to your unique skin profile.",
     featuredServices: [
-      { id: "1", name: "HydraFacial", image: "", description: "Deep cleansing, exfoliation, and hydration", featured: true },
-      { id: "2", name: "Laser Skin Resurfacing", image: "", description: "Advanced fractional laser technology", featured: true },
-      { id: "3", name: "Skin Whitening IV Drip", image: "", description: "Premium intravenous glutathione therapy", featured: true },
+      { id: "1", name: "HydraFacial", category: "Facial", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-md1MqLX2LUGt7awueOBElRDAwdgoaK.png", description: "Deep cleansing, exfoliation, and hydration", featured: true },
+      { id: "2", name: "Laser Skin Resurfacing", category: "Laser", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-VYNPtgtlFfqkFBjmd6QYuKyv5u3286.png", description: "Advanced fractional laser technology", featured: true },
+      { id: "3", name: "Skin Whitening IV Drip", category: "Wellness", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-VYNPtgtlFfqkFBjmd6QYuKyv5u3286.png", description: "Premium intravenous glutathione therapy", featured: true },
     ]
   });
 
@@ -228,72 +229,27 @@ export default function ManageHomePage() {
             {/* Features */}
             <div>
               <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "14px", fontWeight: 700, color: "#1A2E40", marginBottom: "12px" }}>Feature Items (3 items)</h3>
-              <div style={{ display: "grid", gap: "12px" }}>
+              <div style={{ display: "grid", gap: "10px" }}>
                 {heroSection.features.map((feature) => (
-                  <div key={feature.id} style={{ border: "1px solid #D0E8F5", borderRadius: "8px", padding: "14px", background: "#F8FBFF" }}>
-                    {/* Feature Image Upload */}
-                    <div style={{ marginBottom: "12px" }}>
-                      <label style={{ display: "block", fontFamily: "'Inter', sans-serif", fontSize: "12px", fontWeight: 500, color: "#5A7A96", marginBottom: "6px" }}>Feature Image</label>
-                      {feature.image ? (
-                        <div style={{ position: "relative", width: "100%", height: "120px", background: "#FFFFFF", borderRadius: "6px", overflow: "hidden", border: "1px solid #D0E8F5" }}>
-                          <img src={feature.image} alt={feature.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                          <button onClick={() => handleFeatureUpdate(feature.id, "image", "")} style={{ position: "absolute", top: "4px", right: "4px", width: "24px", height: "24px", background: "#FFFFFF", border: "none", borderRadius: "4px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            <X size={14} color="#DC2626" />
-                          </button>
-                        </div>
-                      ) : (
-                        <div style={{
-                          border: "2px dashed #D0E8F5",
-                          borderRadius: "6px",
-                          padding: "16px",
-                          textAlign: "center",
-                          cursor: "pointer",
-                          background: "#FFFFFF",
-                          transition: "all 0.2s"
-                        }}>
-                          <Upload size={16} style={{ color: "#2D6A9F", margin: "0 auto 6px" }} />
-                          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "#5A7A96", margin: "0" }}>Upload image</p>
-                        </div>
-                      )}
+                  <div key={feature.id} style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                    <div style={{ width: "20px", height: "20px", borderRadius: "4px", background: "#EBF6FD", border: "2px solid #2D6A9F", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <Check size={12} color="#2D6A9F" strokeWidth={3} />
                     </div>
-
-                    {/* Feature Title */}
                     <input
                       type="text"
                       value={feature.title}
                       onChange={(e) => handleFeatureUpdate(feature.id, "title", e.target.value)}
-                      placeholder="Feature title"
+                      placeholder="Enter feature item"
                       style={{
-                        width: "100%",
-                        height: "36px",
-                        border: "1px solid #D0E8F5",
-                        borderRadius: "6px",
-                        padding: "0 10px",
-                        fontFamily: "'Inter', sans-serif",
-                        fontSize: "13px",
-                        color: "#1A2E40",
-                        marginBottom: "8px",
-                        outline: "none",
-                        boxSizing: "border-box",
-                      }}
-                    />
-
-                    {/* Feature Description */}
-                    <textarea
-                      value={feature.description}
-                      onChange={(e) => handleFeatureUpdate(feature.id, "description", e.target.value)}
-                      placeholder="Feature description"
-                      rows={2}
-                      style={{
-                        width: "100%",
-                        border: "1px solid #D0E8F5",
-                        borderRadius: "6px",
-                        padding: "8px 10px",
+                        flex: 1,
+                        height: "40px",
+                        border: "1.5px solid #D0E8F5",
+                        borderRadius: "8px",
+                        padding: "0 12px",
                         fontFamily: "'Inter', sans-serif",
                         fontSize: "13px",
                         color: "#1A2E40",
                         outline: "none",
-                        resize: "none",
                         boxSizing: "border-box",
                       }}
                     />
@@ -366,31 +322,44 @@ export default function ManageHomePage() {
               <div style={{ marginBottom: "20px" }}>
                 <label style={{ display: "block", fontFamily: "'Inter', sans-serif", fontSize: "12px", fontWeight: 500, color: "#5A7A96", marginBottom: "8px" }}>Selected Services</label>
                 {treatmentSection.featuredServices.filter(s => s.featured).length > 0 ? (
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "12px" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "16px" }}>
                     {treatmentSection.featuredServices.filter(s => s.featured).map((service) => (
-                      <div key={service.id} style={{ border: "1.5px solid #2D6A9F", borderRadius: "8px", padding: "12px", background: "#EBF6FD", position: "relative" }}>
-                        {service.image && (
-                          <div style={{ width: "100%", height: "100px", background: "#F0F6FC", borderRadius: "6px", marginBottom: "10px", backgroundImage: `url(${service.image})`, backgroundSize: "cover", backgroundPosition: "center" }} />
-                        )}
-                        <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", fontWeight: 600, color: "#2D6A9F", marginBottom: "4px" }}>{service.name}</div>
-                        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "#5A7A96", marginBottom: "8px", lineHeight: "1.4" }}>{service.description}</div>
-                        <button
-                          onClick={() => handleToggleService(service.id)}
-                          style={{
-                            width: "100%",
-                            height: "32px",
-                            background: "#FFFFFF",
-                            border: "1px solid #2D6A9F",
-                            borderRadius: "6px",
-                            fontFamily: "'Inter', sans-serif",
-                            fontSize: "12px",
-                            fontWeight: 500,
-                            color: "#2D6A9F",
-                            cursor: "pointer",
-                          }}
-                        >
-                          Remove
-                        </button>
+                      <div key={service.id} style={{ background: "#FFFFFF", borderRadius: "12px", overflow: "hidden", border: "1px solid #D0E8F5", boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)" }}>
+                        {/* Image Container */}
+                        <div style={{ position: "relative", width: "100%", height: "220px", background: "#F0F6FC", overflow: "hidden" }}>
+                          {service.image ? (
+                            <img src={service.image} alt={service.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                          ) : (
+                            <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#9BBAD4", fontSize: "12px" }}>No image</div>
+                          )}
+                          {/* Category Badge */}
+                          <div style={{ position: "absolute", top: "12px", right: "12px", background: "#FFFFFF", border: "1.5px solid #2D6A9F", borderRadius: "20px", padding: "6px 14px", fontFamily: "'Inter', sans-serif", fontSize: "11px", fontWeight: 600, color: "#2D6A9F" }}>
+                            {service.category}
+                          </div>
+                        </div>
+
+                        {/* Content */}
+                        <div style={{ padding: "16px" }}>
+                          <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "15px", fontWeight: 700, color: "#1A2E40", marginBottom: "8px" }}>{service.name}</div>
+                          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#5A7A96", marginBottom: "12px", lineHeight: "1.5" }}>{service.description}</div>
+                          <button
+                            onClick={() => handleToggleService(service.id)}
+                            style={{
+                              width: "100%",
+                              height: "40px",
+                              background: "#DC2626",
+                              border: "none",
+                              borderRadius: "8px",
+                              fontFamily: "'DM Sans', sans-serif",
+                              fontSize: "13px",
+                              fontWeight: 600,
+                              color: "#FFFFFF",
+                              cursor: "pointer",
+                            }}
+                          >
+                            Remove
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
