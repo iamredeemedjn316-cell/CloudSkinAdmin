@@ -31,6 +31,13 @@ import VeryLowStockPage from "./pages/admin/inventory/VeryLowStockPage";
 import NoStockPage from "./pages/admin/inventory/NoStockPage";
 import VouchersPage from "./pages/admin/VouchersPage";
 import VoucherDetailsPage from "./pages/admin/VoucherDetailsPage";
+import ManageHomePage from "./pages/admin/website/ManageHomePage";
+import ManageAboutPage from "./pages/admin/website/ManageAboutPage";
+import ManageServicesPage from "./pages/admin/website/ManageServicesPage";
+import ManageGalleryPage from "./pages/admin/website/ManageGalleryPage";
+import ManageBlogPage from "./pages/admin/website/ManageBlogPage";
+import ManagePromotionsPage from "./pages/admin/website/ManagePromotionsPage";
+import ManageContactPage from "./pages/admin/website/ManageContactPage";
 import PaymentsPage from "./pages/admin/PaymentsPage";
 import ReportsPage from "./pages/admin/ReportsPage";
 import BlogPage from "./pages/admin/BlogPage";
@@ -88,6 +95,13 @@ export const router = createBrowserRouter([
       { path: "inventory/audit-logs", element: <InventoryPage /> },
       { path: "vouchers", element: <VouchersPage /> },
       { path: "vouchers/:voucherId", element: <VoucherDetailsPage /> },
+      { path: "website/home", element: <ManageHomePage /> },
+      { path: "website/about", element: <ManageAboutPage /> },
+      { path: "website/services", element: <ManageServicesPage /> },
+      { path: "website/gallery", element: <ManageGalleryPage /> },
+      { path: "website/blog", element: <ManageBlogPage /> },
+      { path: "website/promotions", element: <ManagePromotionsPage /> },
+      { path: "website/contact", element: <ManageContactPage /> },
       { path: "payments", element: <PaymentsPage /> },
       { path: "reports", element: <ReportsPage /> },
       { path: "messages", element: <MessagesPage /> },
