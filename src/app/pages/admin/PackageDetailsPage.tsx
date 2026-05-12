@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { PageWrapper } from "../../components/layout/PageWrapper";
-import { ArrowLeft, Edit, Trash2, Archive, Gift, X, Upload, Plus } from "lucide-react";
+import EditPackageModal from "../../components/packages/EditPackageModal";
+import { ArrowLeft, Edit, Trash2, Archive, Gift } from "lucide-react";
 
 const allPackages = [
   { id: "PKG001", name: "5+1 Premium Facial Package", type: "Facial", category: "Facial", description: "Complete facial treatment package with 1 free session", value: 15000, image: "/images/service-hydra-facial.jpg", sessions: [{ id: 1, serviceId: "SVC001", serviceName: "Hydra Facial", isFree: false }, { id: 2, serviceId: "SVC003", serviceName: "Chemical Peel", isFree: false }, { id: 3, serviceId: "SVC001", serviceName: "Hydra Facial", isFree: false }, { id: 4, serviceId: "SVC006", serviceName: "Microneedling", isFree: false }, { id: 5, serviceId: "SVC001", serviceName: "Hydra Facial", isFree: false }, { id: 6, serviceId: "SVC003", serviceName: "Chemical Peel", isFree: true }], status: "active" },
@@ -14,8 +15,7 @@ const allPackages = [
 export default function PackageDetailsPage() {
   const { packageId } = useParams<{ packageId: string }>();
   const navigate = useNavigate();
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [editCategory, setEditCategory] = useState("");
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const pkg = allPackages.find((p) => p.id === packageId);
 
@@ -50,16 +50,10 @@ export default function PackageDetailsPage() {
 
   const freeSessionCount = pkg.sessions.filter((s) => s.isFree).length;
   const paidSessionCount = pkg.sessions.filter((s) => !s.isFree).length;
-  
-  const categoryOptions = ["Facial", "Anti-Aging", "Hair", "Acne", "Wellness"];
 
-  const handleEditModeChange = () => {
-    if (isEditMode) {
-      setEditCategory("");
-    } else {
-      setEditCategory(pkg.category || pkg.type);
-    }
-    setIsEditMode(!isEditMode);
+  const handleEditSave = (updatedPackage: any) => {
+    console.log("[v0] Package updated:", updatedPackage);
+    setIsEditModalOpen(false);
   };
 
   return (
@@ -175,35 +169,9 @@ export default function PackageDetailsPage() {
             <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", fontWeight: 600, color: "#5A7A96", textTransform: "uppercase", marginBottom: "8px" }}>
               Category
             </div>
-            {isEditMode ? (
-              <select
-                value={editCategory}
-                onChange={(e) => setEditCategory(e.target.value)}
-                style={{
-                  width: "100%",
-                  height: "40px",
-                  padding: "0 12px",
-                  border: "1.5px solid #D0E8F5",
-                  borderRadius: "8px",
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: "13px",
-                  color: "#1A2E40",
-                  background: "#FFFFFF",
-                  cursor: "pointer",
-                  outline: "none",
-                }}
-              >
-                {categoryOptions.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#1A2E40" }}>
-                {pkg.category || pkg.type}
-              </div>
-            )}
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#1A2E40" }}>
+              {pkg.category || pkg.type}
+            </div>
           </div>
 
           {/* Sessions Summary */}
@@ -234,7 +202,7 @@ export default function PackageDetailsPage() {
           {/* Action Buttons */}
           <div style={{ display: "flex", gap: "12px" }}>
             <button
-              onClick={handleEditModeChange}
+              onClick={() => setIsEditModalOpen(true)}
               style={{
                 flex: 1,
                 height: "40px",
@@ -252,7 +220,7 @@ export default function PackageDetailsPage() {
                 gap: "6px",
               }}
             >
-              <Edit size={14} /> {isEditMode ? "Done" : "Edit"}
+              <Edit size={14} /> Edit
             </button>
             <button
               style={{
@@ -344,6 +312,14 @@ export default function PackageDetailsPage() {
           ))}
         </div>
       </div>
+
+      {/* Edit Modal */}
+      <EditPackageModal
+        pkg={pkg}
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSave={handleEditSave}
+      />
     </PageWrapper>
   );
 }

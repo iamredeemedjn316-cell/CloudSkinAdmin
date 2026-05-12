@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import { PageWrapper } from "../../components/layout/PageWrapper";
 import { StatCard } from "../../components/StatCard";
-import { Eye, Package, TrendingUp, Archive, Box, Plus, Pencil, Trash2 } from "lucide-react";
+import { Eye, Package, TrendingUp, Archive, Box, Plus, MoreVertical, Trash2 } from "lucide-react";
 
 const allPackages = [
   { id: "PKG001", name: "5+1 Premium Facial Package", type: "Facial", category: "Facial", value: 15000, sessions: 6, status: "active", archived: false, image: "/images/service-hydra-facial.jpg" },
@@ -18,6 +18,7 @@ export default function ViewAllPackagesPage() {
   const navigate = useNavigate();
   const [packagesList, setPackagesList] = useState(allPackages);
   const [searchParams] = useState("");
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
   const activeCount = packagesList.filter((p) => p.status === "active" && !p.archived).length;
   const inactiveCount = packagesList.filter((p) => p.status === "inactive" && !p.archived).length;
@@ -143,7 +144,7 @@ export default function ViewAllPackagesPage() {
                     {pkg.status}
                   </span>
                 </td>
-                <td style={{ padding: "16px 24px", textAlign: "center", display: "flex", gap: "6px", justifyContent: "center" }}>
+                <td style={{ padding: "16px 24px", textAlign: "center", display: "flex", gap: "6px", justifyContent: "center", alignItems: "center", position: "relative" }}>
                   <button
                     onClick={() => navigate(`/admin/packages/${pkg.id}`)}
                     style={{
@@ -162,42 +163,89 @@ export default function ViewAllPackagesPage() {
                   >
                     <Eye size={14} />
                   </button>
-                  <button
-                    onClick={() => navigate(`/admin/packages/${pkg.id}`)}
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      background: "#F0F6FC",
-                      border: "none",
-                      borderRadius: "6px",
-                      cursor: "pointer",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: "#2D6A9F",
-                    }}
-                    title="Edit package"
-                  >
-                    <Pencil size={14} />
-                  </button>
-                  <button
-                    onClick={() => handleArchive(pkg.id)}
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      background: "#FEE2E2",
-                      border: "none",
-                      borderRadius: "6px",
-                      cursor: "pointer",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: "#DC2626",
-                    }}
-                    title="Archive package"
-                  >
-                    <Archive size={14} />
-                  </button>
+
+                  <div style={{ position: "relative" }}>
+                    <button
+                      onClick={() => setOpenMenuId(openMenuId === pkg.id ? null : pkg.id)}
+                      style={{
+                        width: "32px",
+                        height: "32px",
+                        background: "#F0F6FC",
+                        border: "none",
+                        borderRadius: "6px",
+                        cursor: "pointer",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "#2D6A9F",
+                      }}
+                      title="More actions"
+                    >
+                      <MoreVertical size={14} />
+                    </button>
+
+                    {openMenuId === pkg.id && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: "100%",
+                          right: 0,
+                          background: "#FFFFFF",
+                          border: "1px solid #D0E8F5",
+                          borderRadius: "8px",
+                          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                          zIndex: 100,
+                          minWidth: "140px",
+                        }}
+                      >
+                        <button
+                          onClick={() => {
+                            handleArchive(pkg.id);
+                            setOpenMenuId(null);
+                          }}
+                          style={{
+                            width: "100%",
+                            padding: "10px 16px",
+                            background: "none",
+                            border: "none",
+                            textAlign: "left",
+                            fontFamily: "'Inter', sans-serif",
+                            fontSize: "13px",
+                            color: "#F59E0B",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            borderBottom: "1px solid #D0E8F5",
+                          }}
+                        >
+                          <Archive size={14} /> Archive
+                        </button>
+                        <button
+                          onClick={() => {
+                            handleDelete(pkg.id);
+                            setOpenMenuId(null);
+                          }}
+                          style={{
+                            width: "100%",
+                            padding: "10px 16px",
+                            background: "none",
+                            border: "none",
+                            textAlign: "left",
+                            fontFamily: "'Inter', sans-serif",
+                            fontSize: "13px",
+                            color: "#DC2626",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                          }}
+                        >
+                          <Trash2 size={14} /> Delete
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}
