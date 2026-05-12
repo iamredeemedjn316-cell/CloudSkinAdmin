@@ -221,7 +221,49 @@ export default function InventoryPage() {
                         ) : (
                           <TrendingDown size={12} color="#15803D" title="Price decreased" />
                         )
-      )}
+                      )}
+                    </td>
+                    <td style={{ padding: "14px 16px", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "#1A2E40", fontWeight: 600 }}>
+                      ₱{item.sellingPrice.toLocaleString()}
+                    </td>
+                    <td style={{ padding: "14px 16px", fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "#5A7A96" }}>
+                      {new Date(item.expiryDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "2-digit" })}
+                    </td>
+                    <td style={{ padding: "14px 16px" }}>
+                      <span style={{ background: stockStatus.bg, color: stockStatus.color, fontFamily: "'DM Sans', sans-serif", fontSize: "11px", fontWeight: 600, padding: "3px 10px", borderRadius: "9999px", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                        {stockStatus.label}
+                      </span>
+                    </td>
+                    <td style={{ padding: "14px 16px", textAlign: "center" }} onClick={(e) => e.stopPropagation()}>
+                      <button
+                        onClick={() => {
+                          setSelectedItem(item);
+                          setShowAdjustModal(true);
+                        }}
+                        style={{
+                          width: "32px",
+                          height: "32px",
+                          background: "#F0F6FC",
+                          border: "none",
+                          borderRadius: "6px",
+                          cursor: "pointer",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          color: "#2D6A9F",
+                        }}
+                        title="Adjust stock"
+                      >
+                        <Pencil size={14} />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       {/* Modals */}
       <StockAdjustmentModal

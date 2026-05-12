@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Search, Plus, Pencil, Eye, RefreshCw, X, Copy, Check } from "lucide-react";
+import { Search, Plus, Eye, RefreshCw, X, Copy, Check, MoreVertical, Archive, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router";
 import { PageWrapper } from "../../components/layout/PageWrapper";
 import { StatusBadge } from "../../components/StatusBadge";
 
@@ -78,12 +79,12 @@ function generateUniqueCode(prefix: string, index: number): string {
 }
 
 export default function VouchersPage() {
+  const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState("All");
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [showDetailModal, setShowDetailModal] = useState(false);
-  const [selectedBatch, setSelectedBatch] = useState<VoucherBatch | null>(null);
   const [editingVoucher, setEditingVoucher] = useState<VoucherBatch | null>(null);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [discountType, setDiscountType] = useState<"percentage" | "fixed">("percentage");
   const [campaignName, setCampaignName] = useState("");
   const [quantity, setQuantity] = useState(10);
@@ -130,8 +131,19 @@ export default function VouchersPage() {
   };
 
   const handleViewDetails = (batch: VoucherBatch) => {
-    setSelectedBatch(batch);
-    setShowDetailModal(true);
+    navigate(`/admin/vouchers/${batch.id}`);
+  };
+
+  const handleArchive = (batch: VoucherBatch) => {
+    console.log("[v0] Archiving voucher batch:", batch.id);
+    setOpenMenuId(null);
+  };
+
+  const handleDelete = (batch: VoucherBatch) => {
+    if (confirm(`Are you sure you want to delete "${batch.name}" campaign?`)) {
+      console.log("[v0] Deleting voucher batch:", batch.id);
+      setOpenMenuId(null);
+    }
   };
 
   return (
@@ -164,7 +176,7 @@ export default function VouchersPage() {
           <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "900px" }}>
             <thead>
               <tr style={{ background: "#F0F6FC" }}>
-                {["Campaign Name", "Discount", "Eligible Services", "Expiry Date", "Codes Generated", "Used / Total", "Status", "Actions"].map((h) => (
+                {["Campaign Name", "Discount", "Eligible Services", "Expiry Date", "Codes Generated", "Used / Total", "Status", "Action"].map((h) => (
                   <th key={h} style={{ padding: "10px 16px", textAlign: "left", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "#5A7A96", letterSpacing: "0.06em", textTransform: "uppercase", borderBottom: "1px solid #D0E8F5", whiteSpace: "nowrap" }}>{h}</th>
                 ))}
               </tr>
@@ -211,13 +223,104 @@ export default function VouchersPage() {
                     </td>
                     <td style={{ padding: "14px 16px" }}><StatusBadge status={batch.status as any} /></td>
                     <td style={{ padding: "14px 16px" }}>
-                      <div style={{ display: "flex", gap: "6px" }}>
-                        <button onClick={() => handleViewDetails(batch)} style={{ width: "28px", height: "28px", background: "#F0F6FC", border: "none", borderRadius: "6px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#2D6A9F" }} title="View Codes">
+                      <div style={{ display: "flex", gap: "6px", position: "relative" }}>
+                        <button
+                          onClick={() => handleViewDetails(batch)}
+                          style={{
+                            width: "28px",
+                            height: "28px",
+                            background: "#F0F6FC",
+                            border: "none",
+                            borderRadius: "6px",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            color: "#2D6A9F",
+                          }}
+                          title="View Voucher Details"
+                        >
                           <Eye size={13} />
                         </button>
-                        <button onClick={() => handleEditVoucher(batch)} style={{ width: "28px", height: "28px", background: "#F0F6FC", border: "none", borderRadius: "6px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#5A7A96" }} title="Edit">
-                          <Pencil size={13} />
-                        </button>
+
+                        {/* Dropdown Menu */}
+                        <div style={{ position: "relative" }}>
+                          <button
+                            onClick={() => setOpenMenuId(openMenuId === batch.id ? null : batch.id)}
+                            style={{
+                              width: "28px",
+                              height: "28px",
+                              background: "#F0F6FC",
+                              border: "none",
+                              borderRadius: "6px",
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              color: "#5A7A96",
+                            }}
+                            title="More Actions"
+                          >
+                            <MoreVertical size={13} />
+                          </button>
+
+                          {openMenuId === batch.id && (
+                            <div
+                              style={{
+                                position: "absolute",
+                                top: "100%",
+                                right: 0,
+                                background: "#FFFFFF",
+                                border: "1px solid #D0E8F5",
+                                borderRadius: "8px",
+                                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                                zIndex: 100,
+                                minWidth: "140px",
+                                marginTop: "4px",
+                              }}
+                            >
+                              <button
+                                onClick={() => handleArchive(batch)}
+                                style={{
+                                  width: "100%",
+                                  padding: "10px 16px",
+                                  background: "none",
+                                  border: "none",
+                                  textAlign: "left",
+                                  fontFamily: "'Inter', sans-serif",
+                                  fontSize: "13px",
+                                  color: "#F59E0B",
+                                  cursor: "pointer",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "8px",
+                                  borderBottom: "1px solid #D0E8F5",
+                                }}
+                              >
+                                <Archive size={14} /> Archive
+                              </button>
+                              <button
+                                onClick={() => handleDelete(batch)}
+                                style={{
+                                  width: "100%",
+                                  padding: "10px 16px",
+                                  background: "none",
+                                  border: "none",
+                                  textAlign: "left",
+                                  fontFamily: "'Inter', sans-serif",
+                                  fontSize: "13px",
+                                  color: "#DC2626",
+                                  cursor: "pointer",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "8px",
+                                }}
+                              >
+                                <Trash2 size={14} /> Delete
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </td>
                   </tr>
@@ -358,104 +461,6 @@ export default function VouchersPage() {
               <button style={{ height: "38px", padding: "0 20px", background: "#2D6A9F", border: "none", borderRadius: "8px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "14px", fontWeight: 600, color: "#FFFFFF" }}>
                 {editingVoucher ? "Save Changes" : "Generate Vouchers"}
               </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Detail Modal - View All Codes */}
-      {showDetailModal && selectedBatch && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(26,58,92,0.5)", backdropFilter: "blur(4px)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", padding: "24px" }} onClick={() => setShowDetailModal(false)}>
-          <div style={{ background: "#FFFFFF", borderRadius: "16px", width: "100%", maxWidth: "700px", maxHeight: "85vh", boxShadow: "0 8px 32px rgba(26,58,92,0.18)", overflow: "hidden", display: "flex", flexDirection: "column" }} onClick={(e) => e.stopPropagation()}>
-            <div style={{ padding: "20px 24px", borderBottom: "1px solid #D0E8F5" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
-                <div>
-                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "16px", color: "#1A2E40" }}>{selectedBatch.name}</div>
-                  <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "#9BBAD4", marginTop: "2px" }}>
-                    {selectedBatch.type === "percentage" ? `${selectedBatch.value}%` : `₱${selectedBatch.value}`} off · Expires {selectedBatch.expiry}
-                  </div>
-                </div>
-                <button onClick={() => setShowDetailModal(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "#5A7A96" }}>
-                  <X size={20} />
-                </button>
-              </div>
-              <div style={{ display: "flex", gap: "12px" }}>
-                {[
-                  { label: "Total Codes", value: selectedBatch.codes.length, color: "#2D6A9F" },
-                  { label: "Used", value: selectedBatch.codes.filter((c) => c.status === "used").length, color: "#EF4444" },
-                  { label: "Unused", value: selectedBatch.codes.filter((c) => c.status === "unused").length, color: "#16A34A" },
-                ].map((stat) => (
-                  <div key={stat.label} style={{ flex: 1, background: "#F8FBFF", borderRadius: "8px", padding: "10px 12px", border: "1px solid #D0E8F5" }}>
-                    <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "18px", color: stat.color }}>{stat.value}</div>
-                    <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "#9BBAD4" }}>{stat.label}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div style={{ flex: 1, overflowY: "auto", padding: "16px 24px" }}>
-              <div style={{ display: "grid", gap: "8px" }}>
-                {selectedBatch.codes.map((voucherCode) => (
-                  <div
-                    key={voucherCode.code}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      padding: "12px 14px",
-                      border: "1.5px solid #D0E8F5",
-                      borderRadius: "8px",
-                      background: voucherCode.status === "used" ? "#F8F9FA" : "#FFFFFF",
-                    }}
-                  >
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "13px", fontWeight: 500, color: voucherCode.status === "used" ? "#9BBAD4" : "#1A2E40" }}>
-                          {voucherCode.code}
-                        </span>
-                        <span
-                          style={{
-                            background: voucherCode.status === "used" ? "#FEF2F2" : "#DCFCE7",
-                            color: voucherCode.status === "used" ? "#DC2626" : "#15803D",
-                            fontFamily: "'DM Sans', sans-serif",
-                            fontSize: "10px",
-                            fontWeight: 600,
-                            padding: "2px 8px",
-                            borderRadius: "9999px",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.04em",
-                          }}
-                        >
-                          {voucherCode.status}
-                        </span>
-                      </div>
-                      {voucherCode.status === "used" && voucherCode.usedBy && (
-                        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "#9BBAD4", marginTop: "4px" }}>
-                          Used by {voucherCode.usedBy} on {voucherCode.usedDate}
-                        </div>
-                      )}
-                    </div>
-                    <button
-                      onClick={() => handleCopyCode(voucherCode.code)}
-                      style={{
-                        width: "32px",
-                        height: "32px",
-                        background: copiedCode === voucherCode.code ? "#DCFCE7" : "#F0F6FC",
-                        border: "none",
-                        borderRadius: "6px",
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        color: copiedCode === voucherCode.code ? "#15803D" : "#5A7A96",
-                        transition: "all 150ms",
-                      }}
-                      title="Copy code"
-                    >
-                      {copiedCode === voucherCode.code ? <Check size={14} /> : <Copy size={14} />}
-                    </button>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         </div>

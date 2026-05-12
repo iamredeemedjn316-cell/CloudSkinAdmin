@@ -30,6 +30,7 @@ import OkStockPage from "./pages/admin/inventory/OkStockPage";
 import VeryLowStockPage from "./pages/admin/inventory/VeryLowStockPage";
 import NoStockPage from "./pages/admin/inventory/NoStockPage";
 import VouchersPage from "./pages/admin/VouchersPage";
+import VoucherDetailsPage from "./pages/admin/VoucherDetailsPage";
 import PaymentsPage from "./pages/admin/PaymentsPage";
 import ReportsPage from "./pages/admin/ReportsPage";
 import BlogPage from "./pages/admin/BlogPage";
@@ -86,6 +87,7 @@ export const router = createBrowserRouter([
       { path: "inventory/purchase-orders", element: <InventoryPage /> },
       { path: "inventory/audit-logs", element: <InventoryPage /> },
       { path: "vouchers", element: <VouchersPage /> },
+      { path: "vouchers/:voucherId", element: <VoucherDetailsPage /> },
       { path: "payments", element: <PaymentsPage /> },
       { path: "reports", element: <ReportsPage /> },
       { path: "messages", element: <MessagesPage /> },
