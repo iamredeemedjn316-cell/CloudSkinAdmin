@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { PageWrapper } from "../../../components/layout/PageWrapper";
 import { StatCard } from "../../../components/StatCard";
+import { StockStatusInfo } from "../../../components/inventory/StockStatusInfo";
 import { Search, Plus, Pencil, Package, CheckCircle, AlertTriangle } from "lucide-react";
 
 const allInventory = [
@@ -30,6 +31,9 @@ export default function OkStockPage() {
 
   return (
     <PageWrapper title="OK Stock Items" subtitle="Items with adequate stock levels">
+      {/* Stock Status Info Card */}
+      <StockStatusInfo status="ok" itemCount={allInventory.length} />
+
       {/* Stat Cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "20px", marginBottom: "24px" }}>
         <StatCard label="OK Stock Items" value={allInventory.length} icon={<CheckCircle size={18} />} variant="success" />

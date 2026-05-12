@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { PageWrapper } from "../../../components/layout/PageWrapper";
 import { StatCard } from "../../../components/StatCard";
+import { StockStatusInfo } from "../../../components/inventory/StockStatusInfo";
 import { Search, Plus, AlertCircle } from "lucide-react";
 
 const allInventory = [
@@ -26,6 +27,9 @@ export default function VeryLowStockPage() {
 
   return (
     <PageWrapper title="Very Low Stock Items" subtitle="Critical items requiring immediate restock">
+      {/* Stock Status Info Card */}
+      <StockStatusInfo status="veryLow" itemCount={allInventory.length} />
+
       {/* Stat Cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "20px", marginBottom: "24px" }}>
         <StatCard label="Very Low Stock Items" value={allInventory.length} icon={<AlertCircle size={18} />} variant="danger" />
