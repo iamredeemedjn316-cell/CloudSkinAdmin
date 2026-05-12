@@ -5,7 +5,8 @@ import {
   Package, Tag, CreditCard, BarChart2, FileText, Settings,
   ChevronLeft, ChevronRight, LogOut, Bell, Archive, UserCheck, UserX,
   Eye, CheckCircle, Clock, XCircle, Loader, DollarSign, ClipboardList,
-  Boxes, Gift, Activity, Sparkles, MessageSquare, Star
+  Boxes, Gift, Activity, Sparkles, MessageSquare, Star, AlertCircle, AlertTriangle,
+  TrendingDown, Ban
 } from "lucide-react";
 import { useApp, UserRole } from "../../context/AppContext";
 
@@ -24,26 +25,28 @@ const adminNavItems: NavItem[] = [
     icon: <Calendar size={20} />, 
     badge: 12,
     children: [
-      { label: "View Appointments", icon: <Eye size={16} />, path: "/admin/appointments" },
-      { label: "Confirmed", icon: <CheckCircle size={16} />, path: "/admin/appointments?status=confirmed" },
-      { label: "In Progress", icon: <Loader size={16} />, path: "/admin/appointments?status=in-progress" },
-      { label: "Pending", icon: <Clock size={16} />, path: "/admin/appointments?status=pending" },
-      { label: "Cancelled", icon: <XCircle size={16} />, path: "/admin/appointments?status=cancelled" },
+      { label: "View All", icon: <Eye size={16} />, path: "/admin/appointments/all" },
+      { label: "Confirmed", icon: <CheckCircle size={16} />, path: "/admin/appointments/confirmed" },
+      { label: "In Progress", icon: <Loader size={16} />, path: "/admin/appointments/in-progress" },
+      { label: "Pending", icon: <Clock size={16} />, path: "/admin/appointments/pending" },
+      { label: "Cancelled", icon: <XCircle size={16} />, path: "/admin/appointments/cancelled" },
     ]
   },
   { 
     label: "Patients", 
     icon: <Users size={20} />, 
     children: [
-      { label: "Active", icon: <UserCheck size={16} />, path: "/admin/patients?status=active" },
-      { label: "Inactive", icon: <UserX size={16} />, path: "/admin/patients?status=inactive" },
-      { label: "Patients Archive", icon: <Archive size={16} />, path: "/admin/patients-archive" }
+      { label: "View All Patients", icon: <Eye size={16} />, path: "/admin/patients/all" },
+      { label: "Active Patients", icon: <UserCheck size={16} />, path: "/admin/patients?status=active" },
+      { label: "Inactive Patients", icon: <UserX size={16} />, path: "/admin/patients?status=inactive" },
+      { label: "Archive Patients", icon: <Archive size={16} />, path: "/admin/patients-archive" }
     ]
   },
   { 
     label: "Staff", 
     icon: <UserCog size={20} />, 
     children: [
+      { label: "View All Staff", icon: <Eye size={16} />, path: "/admin/staff/all" },
       { label: "Active Staff", icon: <UserCheck size={16} />, path: "/admin/staff?status=active" },
       { label: "Inactive Staff", icon: <UserX size={16} />, path: "/admin/staff?status=inactive" },
       { label: "Staff Archive", icon: <Archive size={16} />, path: "/admin/staff-archive" }
@@ -53,19 +56,37 @@ const adminNavItems: NavItem[] = [
     label: "Services", 
     icon: <Scissors size={20} />, 
     children: [
+      { label: "View All Services", icon: <Eye size={16} />, path: "/admin/services/all" },
       { label: "Active Services", icon: <UserCheck size={16} />, path: "/admin/services?status=active" },
       { label: "Inactive Services", icon: <UserX size={16} />, path: "/admin/services?status=inactive" },
+      { label: "Archive Services", icon: <Archive size={16} />, path: "/admin/services-archive" }
     ]
   },
   { 
     label: "Packages", 
     icon: <Package size={20} />, 
     children: [
+      { label: "View All Packages", icon: <Eye size={16} />, path: "/admin/packages/all" },
       { label: "Active Packages", icon: <UserCheck size={16} />, path: "/admin/packages?status=active" },
       { label: "Inactive Packages", icon: <UserX size={16} />, path: "/admin/packages?status=inactive" },
+      { label: "Archive Packages", icon: <Archive size={16} />, path: "/admin/packages-archive" }
     ]
   },
-  { label: "Inventory", icon: <Boxes size={20} />, path: "/admin/inventory", badge: 5 },
+  { 
+    label: "Inventory", 
+    icon: <Boxes size={20} />, 
+    children: [
+      { label: "View All Inventory", icon: <Eye size={16} />, path: "/admin/inventory" },
+      { label: "Full Stock", icon: <CheckCircle size={16} />, path: "/admin/inventory/full-stock" },
+      { label: "OK Stock", icon: <TrendingDown size={16} />, path: "/admin/inventory/ok-stock" },
+      { label: "Low Stock", icon: <AlertTriangle size={16} />, path: "/admin/inventory/low-stock", badge: 5 },
+      { label: "Very Low Stock", icon: <AlertCircle size={16} />, path: "/admin/inventory/very-low-stock" },
+      { label: "No Stock", icon: <Ban size={16} />, path: "/admin/inventory/no-stock" },
+      { label: "Suppliers", icon: <Package size={16} />, path: "/admin/inventory/suppliers" },
+      { label: "Purchase Orders", icon: <ClipboardList size={16} />, path: "/admin/inventory/purchase-orders" },
+      { label: "Audit Logs", icon: <Activity size={16} />, path: "/admin/inventory/audit-logs" }
+    ]
+  },
   { label: "Vouchers", icon: <Tag size={20} />, path: "/admin/vouchers" },
   { label: "Payments", icon: <CreditCard size={20} />, path: "/admin/payments", badge: 3 },
   { 
