@@ -170,6 +170,7 @@ export default function ViewAllAppointmentsPage() {
             <AppointmentCalendar
               appointments={appointments}
               onDayClick={handleDayClick}
+              onAppointmentClick={(apt) => console.log("Clicked appointment:", apt)}
             />
             {showDayModal && (
               <DayAppointmentsModal

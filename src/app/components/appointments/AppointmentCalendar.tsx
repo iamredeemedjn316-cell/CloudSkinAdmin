@@ -1,30 +1,56 @@
 import React, { useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { StatusType } from "../../components/StatusBadge";
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from "lucide-react";
 
 interface Appointment {
   id: number;
   client: string;
+  clientInitials: string;
+  clientColor: string;
   date: string;
   time: string;
   type: "online" | "f2f";
-  status: StatusType;
+  status: "confirmed" | "in-progress" | "pending" | "cancelled" | "completed";
   service: string;
+  practitioner: string;
+  duration: string;
 }
 
 interface AppointmentCalendarProps {
   appointments: Appointment[];
-  statusFilter: StatusType;
   onDayClick: (date: string) => void;
+  onAppointmentClick?: (appointment: Appointment) => void;
 }
 
-export default function AppointmentCalendar({ appointments, statusFilter, onDayClick }: AppointmentCalendarProps) {
+export default function AppointmentCalendar({ appointments, onDayClick, onAppointmentClick }: AppointmentCalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date(2026, 3, 1)); // April 2026
+  const [viewMode, setViewMode] = useState<"month" | "week" | "day">("month");
+  const [selectedFilters, setSelectedFilters] = useState<Set<string>>(
+    new Set(["confirmed", "in-progress", "pending", "cancelled"])
+  );
 
-  // Get appointments for a specific date
+  // Status colors for visual differentiation
+  const statusColors: Record<string, string> = {
+    confirmed: "#16A34A",
+    "in-progress": "#F59E0B",
+    pending: "#3B82F6",
+    cancelled: "#DC2626",
+    completed: "#8B5CF6",
+  };
+
+  const toggleFilter = (status: string) => {
+    const newFilters = new Set(selectedFilters);
+    if (newFilters.has(status)) {
+      newFilters.delete(status);
+    } else {
+      newFilters.add(status);
+    }
+    setSelectedFilters(newFilters);
+  };
+
+  // Get appointments for a specific date with active filters
   const getAppointmentsForDate = (day: number) => {
     const dateStr = new Date(currentDate.getFullYear(), currentDate.getMonth(), day).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-    return appointments.filter(apt => apt.date === dateStr && apt.status === statusFilter);
+    return appointments.filter(apt => apt.date === dateStr && selectedFilters.has(apt.status));
   };
 
   // Get first day of month and number of days
@@ -45,6 +71,58 @@ export default function AppointmentCalendar({ appointments, statusFilter, onDayC
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+      {/* Filter Controls */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "12px", paddingBottom: "12px", borderBottom: "1px solid #D0E8F5" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", fontWeight: 600, color: "#1A2E40" }}>
+            Filter by Status:
+          </span>
+          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+            {["confirmed", "in-progress", "pending", "cancelled"].map((status) => (
+              <label key={status} style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer" }}>
+                <input
+                  type="checkbox"
+                  checked={selectedFilters.has(status)}
+                  onChange={() => toggleFilter(status)}
+                  style={{ cursor: "pointer", width: "16px", height: "16px" }}
+                />
+                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#5A7A96", textTransform: "capitalize" }}>
+                  {status.replace("-", " ")}
+                </span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", fontWeight: 600, color: "#1A2E40" }}>
+            View Mode:
+          </span>
+          <div style={{ display: "flex", gap: "8px" }}>
+            {["day", "week", "month"].map((mode) => (
+              <button
+                key={mode}
+                onClick={() => setViewMode(mode as "day" | "week" | "month")}
+                style={{
+                  padding: "6px 12px",
+                  background: viewMode === mode ? "#2D6A9F" : "#F0F6FC",
+                  color: viewMode === mode ? "#FFFFFF" : "#5A7A96",
+                  border: "1px solid #D0E8F5",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "12px",
+                  fontWeight: 500,
+                  textTransform: "capitalize",
+                }}
+              >
+                {mode}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* Header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "16px", fontWeight: 600, color: "#1A2E40" }}>
@@ -115,15 +193,15 @@ export default function AppointmentCalendar({ appointments, statusFilter, onDayC
           }
 
           const dayAppointments = getAppointmentsForDate(day);
-          const hasFaceToFace = dayAppointments.some(a => a.type === "f2f");
-          const hasOnline = dayAppointments.some(a => a.type === "online");
+          const dateStr = new Date(currentDate.getFullYear(), currentDate.getMonth(), day).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
           return (
-            <button
+            <div
               key={day}
               onClick={() => {
-                const dateStr = new Date(currentDate.getFullYear(), currentDate.getMonth(), day).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-                onDayClick(dateStr);
+                if (dayAppointments.length > 0) {
+                  onDayClick(dateStr);
+                }
               }}
               style={{
                 padding: "8px",
@@ -132,67 +210,85 @@ export default function AppointmentCalendar({ appointments, statusFilter, onDayC
                 background: "#FFFFFF",
                 cursor: dayAppointments.length > 0 ? "pointer" : "default",
                 transition: "all 150ms ease",
-                minHeight: "56px",
+                minHeight: "72px",
                 display: "flex",
                 flexDirection: "column",
-                alignItems: "center",
+                alignItems: "flex-start",
                 justifyContent: "flex-start",
                 position: "relative",
               }}
               onMouseEnter={(e) => {
                 if (dayAppointments.length > 0) {
-                  (e.currentTarget as HTMLButtonElement).style.background = "#F0F6FC";
-                  (e.currentTarget as HTMLButtonElement).style.borderColor = "#2D6A9F";
+                  (e.currentTarget as HTMLDivElement).style.background = "#F0F6FC";
+                  (e.currentTarget as HTMLDivElement).style.borderColor = "#2D6A9F";
                 }
               }}
               onMouseLeave={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.background = "#FFFFFF";
-                (e.currentTarget as HTMLButtonElement).style.borderColor = "#D0E8F5";
+                (e.currentTarget as HTMLDivElement).style.background = "#FFFFFF";
+                (e.currentTarget as HTMLDivElement).style.borderColor = "#D0E8F5";
               }}
             >
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "14px", fontWeight: 600, color: "#1A2E40", marginBottom: "4px" }}>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", fontWeight: 600, color: "#1A2E40", marginBottom: "6px", width: "100%" }}>
                 {day}
               </span>
               {dayAppointments.length > 0 && (
-                <div style={{ display: "flex", gap: "2px" }}>
-                  {hasFaceToFace && (
+                <div style={{ display: "flex", flexDirection: "column", gap: "3px", width: "100%", overflow: "hidden" }}>
+                  {dayAppointments.slice(0, 2).map((apt) => (
                     <div
-                      style={{
-                        width: "6px",
-                        height: "6px",
-                        borderRadius: "50%",
-                        background: "#1E40AF",
-                        title: "Face to Face appointments",
+                      key={apt.id}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onAppointmentClick?.(apt);
                       }}
-                    />
-                  )}
-                  {hasOnline && (
-                    <div
                       style={{
-                        width: "6px",
-                        height: "6px",
-                        borderRadius: "50%",
-                        background: "#16A34A",
-                        title: "Online appointments",
+                        background: statusColors[apt.status] || "#3B82F6",
+                        color: "#FFFFFF",
+                        padding: "3px 6px",
+                        borderRadius: "4px",
+                        fontSize: "10px",
+                        fontFamily: "'Inter', sans-serif",
+                        cursor: "pointer",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        transition: "opacity 150ms ease",
                       }}
-                    />
+                      onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.8")}
+                      onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+                      title={`${apt.client} - ${apt.service} at ${apt.time}`}
+                    >
+                      {apt.client.split(" ")[0]} - {apt.time}
+                    </div>
+                  ))}
+                  {dayAppointments.length > 2 && (
+                    <div style={{ fontSize: "9px", color: "#5A7A96", fontFamily: "'Inter', sans-serif", paddingLeft: "6px" }}>
+                      +{dayAppointments.length - 2} more
+                    </div>
                   )}
                 </div>
               )}
-            </button>
+            </div>
           );
         })}
       </div>
 
       {/* Legend */}
-      <div style={{ borderTop: "1px solid #D0E8F5", paddingTop: "12px", display: "flex", gap: "16px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-          <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#1E40AF" }} />
-          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "#5A7A96" }}>F2F</span>
-        </div>
+      <div style={{ borderTop: "1px solid #D0E8F5", paddingTop: "12px", display: "flex", gap: "16px", flexWrap: "wrap" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
           <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#16A34A" }} />
-          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "#5A7A96" }}>Online</span>
+          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "#5A7A96" }}>Confirmed</span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#F59E0B" }} />
+          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "#5A7A96" }}>In Progress</span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#3B82F6" }} />
+          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "#5A7A96" }}>Pending</span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#DC2626" }} />
+          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "#5A7A96" }}>Cancelled</span>
         </div>
       </div>
     </div>
