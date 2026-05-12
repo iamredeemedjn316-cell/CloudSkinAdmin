@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { PageWrapper } from "../../components/layout/PageWrapper";
-import { StatCard } from "../../components/StatCard";
+import { PageWrapper } from "../../../components/layout/PageWrapper";
+import { StatCard } from "../../../components/StatCard";
 import { Search, Plus, Pencil, History, X, AlertTriangle, Package, CheckCircle } from "lucide-react";
 
 const allInventory = [
