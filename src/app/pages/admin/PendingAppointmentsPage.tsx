@@ -1,5 +1,5 @@
 import React from "react";
-import { AppointmentStatusLayout } from "../../components/appointments/AppointmentStatusLayout";
+import { AppointmentListOnly } from "../../components/appointments/AppointmentListOnly";
 
 interface Appointment {
   id: number;
@@ -38,7 +38,7 @@ const appointments: Appointment[] = [
 
 export default function PendingAppointmentsPage() {
   return (
-    <AppointmentStatusLayout
+    <AppointmentListOnly
       title="Pending Appointments"
       breadcrumb="Admin / Appointments / Pending"
       statusFilter="pending"
