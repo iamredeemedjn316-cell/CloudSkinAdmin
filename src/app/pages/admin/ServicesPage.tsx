@@ -7,10 +7,10 @@ import { StatusBadge } from "../../components/StatusBadge";
 const categories = ["All", "Skin Treatments", "Injectables", "Laser", "Hair", "Wellness"];
 
 const services = [
-  { id: "SVC001", name: "Hydra Facial", category: "Skin Treatments", duration: 60, price: 2500, status: "active", practitioners: ["MS", "AR"], description: "Deep cleansing and hydration facial treatment using vortex technology." },
-  { id: "SVC002", name: "Botox Treatment", category: "Injectables", duration: 45, price: 8000, status: "active", practitioners: ["AR"], description: "Neurotoxin injection for wrinkle reduction and facial contouring." },
-  { id: "SVC003", name: "Chemical Peel", category: "Skin Treatments", duration: 45, price: 3500, status: "active", practitioners: ["MS", "AR"], description: "Chemical exfoliation treatment for skin renewal and brightening." },
-  { id: "SVC004", name: "PRP Hair Therapy", category: "Hair", duration: 90, price: 12000, status: "active", practitioners: ["JL"], description: "Platelet-rich plasma therapy for hair growth and restoration." },
+  { id: "SVC001", name: "Hydra Facial", category: "Skin Treatments", duration: 60, price: 2500, status: "active", practitioners: ["MS", "AR"], description: "Deep cleansing and hydration facial treatment using vortex technology.", image: "/images/service-hydra-facial.jpg" },
+  { id: "SVC002", name: "Botox Treatment", category: "Injectables", duration: 45, price: 8000, status: "active", practitioners: ["AR"], description: "Neurotoxin injection for wrinkle reduction and facial contouring.", image: "/images/service-botox.jpg" },
+  { id: "SVC003", name: "Chemical Peel", category: "Skin Treatments", duration: 45, price: 3500, status: "active", practitioners: ["MS", "AR"], description: "Chemical exfoliation treatment for skin renewal and brightening.", image: "/images/service-chemical-peel.jpg" },
+  { id: "SVC004", name: "PRP Hair Therapy", category: "Hair", duration: 90, price: 12000, status: "active", practitioners: ["JL"], description: "Platelet-rich plasma therapy for hair growth and restoration.", image: "/images/service-prp-hair.jpg" },
   { id: "SVC005", name: "LED Light Therapy", category: "Skin Treatments", duration: 30, price: 1800, status: "active", practitioners: ["MS", "AR", "JL"], description: "Non-invasive light therapy for acne, anti-aging, and skin repair." },
   { id: "SVC006", name: "Microneedling", category: "Skin Treatments", duration: 60, price: 4500, status: "active", practitioners: ["MS"], description: "Collagen induction therapy using micro-needles for skin rejuvenation." },
   { id: "SVC007", name: "Laser Resurfacing", category: "Laser", duration: 90, price: 15000, status: "active", practitioners: ["JL"], description: "Advanced laser treatment for scars, wrinkles, and skin texture improvement." },
@@ -121,8 +121,19 @@ export default function ServicesPage() {
         {filtered.map((service) => (
           <div
             key={service.id}
-            style={{ background: "#FFFFFF", borderRadius: "12px", boxShadow: "0 1px 4px rgba(26,58,92,0.08)", border: "1px solid #D0E8F5", overflow: "hidden" }}
+            style={{ background: "#FFFFFF", borderRadius: "12px", boxShadow: "0 1px 4px rgba(26,58,92,0.08)", border: "1px solid #D0E8F5", overflow: "hidden", display: "flex", flexDirection: "column" }}
           >
+            {/* Service Image */}
+            <div style={{ width: "100%", height: "180px", background: "#F0F6FC", overflow: "hidden", borderBottom: "1px solid #D0E8F5" }}>
+              {service.image ? (
+                <img src={service.image} alt={service.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              ) : (
+                <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#9BBAD4" }}>
+                  No Image
+                </div>
+              )}
+            </div>
+
             {/* Card Header */}
             <div style={{ background: "linear-gradient(135deg, #EBF6FD 0%, #F0F6FC 100%)", padding: "16px 20px", borderBottom: "1px solid #D0E8F5", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
               <div>
@@ -140,8 +151,8 @@ export default function ServicesPage() {
             </div>
 
             {/* Card Body */}
-            <div style={{ padding: "16px 20px" }}>
-              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "#5A7A96", lineHeight: 1.6, marginBottom: "14px" }}>
+            <div style={{ padding: "16px 20px", flex: 1, display: "flex", flexDirection: "column" }}>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "#5A7A96", lineHeight: 1.6, marginBottom: "14px", flex: 1 }}>
                 {service.description}
               </div>
 

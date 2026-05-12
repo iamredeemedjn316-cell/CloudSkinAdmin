@@ -1,25 +1,52 @@
 import React, { useState } from "react";
-import { Search, Download, Eye, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Download, Eye, ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
 import { PageWrapper } from "../../components/layout/PageWrapper";
 import { StatusBadge } from "../../components/StatusBadge";
+import ServiceDetailsModal from "../../components/services/ServiceDetailsModal";
+import DeleteConfirmationModal from "../../components/services/DeleteConfirmationModal";
 
 const archivedServices = [
-  { id: "SRV009", name: "Dermal Fillers", category: "Injectables", price: "₱18,000", duration: "60 min", archivedDate: "Mar 10, 2026" },
+  { id: "SRV009", name: "Dermal Fillers", category: "Injectables", price: "₱18,000", duration: "60 min", archivedDate: "Mar 10, 2026", image: "/images/service-hydra-facial.jpg" },
 ];
 
 export default function ServicesArchivePage() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [servicesList, setServicesList] = useState(archivedServices);
+  const [selectedService, setSelectedService] = useState<any>(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [serviceToDelete, setServiceToDelete] = useState<any>(null);
   const rowsPerPage = 10;
 
   // Filter
-  const filtered = archivedServices.filter(s =>
+  const filtered = servicesList.filter(s =>
     s.name.toLowerCase().includes(search.toLowerCase()) ||
     s.category.toLowerCase().includes(search.toLowerCase())
   );
 
   const totalPages = Math.ceil(filtered.length / rowsPerPage);
   const displayed = filtered.slice((page - 1) * rowsPerPage, page * rowsPerPage);
+
+  const handleDeleteService = (service: any) => {
+    setServiceToDelete(service);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = () => {
+    if (serviceToDelete) {
+      setServicesList(servicesList.filter(s => s.id !== serviceToDelete.id));
+      setShowDeleteModal(false);
+      setServiceToDelete(null);
+    }
+  };
+
+  const handleSaveService = (updatedService: any) => {
+    setServicesList(servicesList.map(s =>
+      s.id === updatedService.id ? updatedService : s
+    ));
+    setShowDetailsModal(false);
+  };
 
   return (
     <PageWrapper title="Archive Services" breadcrumb="Admin / Services / Archive Services">
@@ -55,6 +82,7 @@ export default function ServicesArchivePage() {
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr style={{ background: "#F8FBFF", borderBottom: "2px solid #D0E8F5" }}>
+              <th style={{ padding: "12px 24px", textAlign: "center", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", fontWeight: 600, color: "#5A7A96", textTransform: "uppercase", width: "80px" }}>Image</th>
               <th style={{ padding: "12px 24px", textAlign: "left", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", fontWeight: 600, color: "#5A7A96", textTransform: "uppercase" }}>Service Name</th>
               <th style={{ padding: "12px 24px", textAlign: "left", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", fontWeight: 600, color: "#5A7A96", textTransform: "uppercase" }}>Category</th>
               <th style={{ padding: "12px 24px", textAlign: "left", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", fontWeight: 600, color: "#5A7A96", textTransform: "uppercase" }}>Price</th>
@@ -66,14 +94,37 @@ export default function ServicesArchivePage() {
           <tbody>
             {displayed.map((service) => (
               <tr key={service.id} style={{ borderBottom: "1px solid #D0E8F5", cursor: "pointer" }} onMouseEnter={(e) => (e.currentTarget.style.background = "#F8FBFF")} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
+                <td style={{ padding: "16px 24px", textAlign: "center" }}>
+                  {service.image ? (
+                    <img src={service.image} alt={service.name} style={{ width: "50px", height: "50px", borderRadius: "6px", objectFit: "cover" }} />
+                  ) : (
+                    <div style={{ width: "50px", height: "50px", borderRadius: "6px", background: "#F0F6FC", display: "flex", alignItems: "center", justifyContent: "center", color: "#9BBAD4" }}>
+                      No image
+                    </div>
+                  )}
+                </td>
                 <td style={{ padding: "16px 24px", fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#1A2E40", fontWeight: 500 }}>{service.name}</td>
                 <td style={{ padding: "16px 24px", fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#5A7A96" }}>{service.category}</td>
                 <td style={{ padding: "16px 24px", fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#1A2E40", fontWeight: 500 }}>{service.price}</td>
                 <td style={{ padding: "16px 24px", fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#5A7A96" }}>{service.duration}</td>
                 <td style={{ padding: "16px 24px", fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#5A7A96" }}>{service.archivedDate}</td>
-                <td style={{ padding: "16px 24px", textAlign: "center" }}>
-                  <button style={{ width: "32px", height: "32px", background: "#F0F6FC", border: "none", borderRadius: "6px", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", color: "#2D6A9F" }}>
+                <td style={{ padding: "16px 24px", textAlign: "center", display: "flex", gap: "8px", justifyContent: "center" }}>
+                  <button 
+                    onClick={() => {
+                      setSelectedService(service);
+                      setShowDetailsModal(true);
+                    }}
+                    style={{ width: "32px", height: "32px", background: "#F0F6FC", border: "none", borderRadius: "6px", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", color: "#2D6A9F" }}
+                    title="View details"
+                  >
                     <Eye size={14} />
+                  </button>
+                  <button 
+                    onClick={() => handleDeleteService(service)}
+                    style={{ width: "32px", height: "32px", background: "#FEE2E2", border: "none", borderRadius: "6px", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", color: "#DC2626" }}
+                    title="Delete service"
+                  >
+                    <Trash2 size={14} />
                   </button>
                 </td>
               </tr>
@@ -101,6 +152,29 @@ export default function ServicesArchivePage() {
           </div>
         </div>
       </div>
+
+      {/* Modals */}
+      {showDetailsModal && selectedService && (
+        <ServiceDetailsModal
+          service={selectedService}
+          onClose={() => {
+            setShowDetailsModal(false);
+            setSelectedService(null);
+          }}
+          onSave={handleSaveService}
+        />
+      )}
+
+      {showDeleteModal && serviceToDelete && (
+        <DeleteConfirmationModal
+          serviceName={serviceToDelete.name}
+          onConfirm={confirmDelete}
+          onCancel={() => {
+            setShowDeleteModal(false);
+            setServiceToDelete(null);
+          }}
+        />
+      )}
     </PageWrapper>
   );
 }
