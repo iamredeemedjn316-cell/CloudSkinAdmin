@@ -1,7 +1,10 @@
 import React, { useState } from "react";
-import { Search, Plus, Pencil, History, X, AlertTriangle, Package } from "lucide-react";
+import { Search, Plus, Pencil, History, X, AlertTriangle, Package, MoreVertical, Download, Upload } from "lucide-react";
 import { PageWrapper } from "../../components/layout/PageWrapper";
 import { StatCard } from "../../components/StatCard";
+import StockAdjustmentModal from "../../components/inventory/StockAdjustmentModal";
+import PurchaseOrderModal from "../../components/inventory/PurchaseOrderModal";
+import BulkImportExportModal from "../../components/inventory/BulkImportExportModal";
 
 const inventory = [
   { id: "INV001", name: "Hyaluronic Acid Serum", sku: "SKIN-001", category: "Serum", unit: "mL", stock: 450, threshold: 200, maxCapacity: 500, purchasePrice: 120, sellingPrice: 350, expiryDate: "2026-08-15", lastUpdated: "Apr 22, 2026" },
@@ -26,8 +29,10 @@ export default function InventoryPage() {
   const [search, setSearch] = useState("");
   const [showLowOnly, setShowLowOnly] = useState(false);
   const [showAdjustModal, setShowAdjustModal] = useState(false);
+  const [showPOModal, setShowPOModal] = useState(false);
+  const [showBulkModal, setShowBulkModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
-  const [adjustType, setAdjustType] = useState<"add" | "writeoff">("add");
+  const [adjustmentLog, setAdjustmentLog] = useState<any[]>([]);
 
   const lowCount = inventory.filter((i) => i.stock > 0 && i.stock <= i.threshold).length;
   const outCount = inventory.filter((i) => i.stock === 0).length;
@@ -38,6 +43,35 @@ export default function InventoryPage() {
     const matchLow = !showLowOnly || item.stock <= item.threshold;
     return matchSearch && matchLow;
   });
+
+  const handleAdjustmentSave = (adjustment: any) => {
+    console.log("[v0] Stock adjustment:", adjustment);
+    setAdjustmentLog([...adjustmentLog, adjustment]);
+  };
+
+  const handleBulkImport = (data: any[]) => {
+    console.log("[v0] Bulk import data:", data);
+    alert(`Successfully imported ${data.length} items`);
+  };
+
+  const handleBulkExport = () => {
+    const csv = ["SKU,Item Name,Quantity,Purchase Price,Selling Price,Threshold,Max Capacity,Expiry Date"];
+    inventory.forEach((item) => {
+      csv.push(`${item.sku},${item.name},${item.stock},${item.purchasePrice},${item.sellingPrice},${item.threshold},${item.maxCapacity},${item.expiryDate}`);
+    });
+    const blob = new Blob([csv.join("\n")], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `inventory-${new Date().toISOString().split("T")[0]}.csv`;
+    a.click();
+  };
+
+  const suppliers = [
+    { id: "SUP001", name: "Premium Beauty Supplies" },
+    { id: "SUP002", name: "Medical Distribution Ltd" },
+    { id: "SUP003", name: "Derma Solutions Inc" },
+  ];
 
   return (
     <PageWrapper title="Inventory" breadcrumb="Admin / Inventory">
@@ -59,6 +93,30 @@ export default function InventoryPage() {
           <Search size={14} style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: "#9BBAD4" }} />
           <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search items or SKU..." style={{ width: "100%", height: "40px", border: "1.5px solid #D0E8F5", borderRadius: "8px", padding: "0 12px 0 32px", fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#1A2E40", outline: "none", background: "#FFFFFF", boxSizing: "border-box" }} />
         </div>
+        <button
+          onClick={() => setShowLowOnly(!showLowOnly)}
+          style={{ height: "40px", padding: "0 16px", background: showLowOnly ? "#FEF3C7" : "#FFFFFF", border: `1.5px solid ${showLowOnly ? "#F59E0B" : "#D0E8F5"}`, borderRadius: "8px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", fontWeight: 500, color: showLowOnly ? "#D97706" : "#5A7A96", display: "flex", alignItems: "center", gap: "6px" }}
+        >
+          <AlertTriangle size={14} /> Low Stock Only
+        </button>
+        <div style={{ marginLeft: "auto", display: "flex", gap: "12px" }}>
+          <button
+            onClick={() => setShowPOModal(true)}
+            style={{ height: "40px", padding: "0 16px", background: "#F0F6FC", border: "1.5px solid #D0E8F5", borderRadius: "8px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", fontWeight: 600, color: "#2D6A9F", display: "flex", alignItems: "center", gap: "6px" }}
+          >
+            <Plus size={14} /> New PO
+          </button>
+          <button
+            onClick={() => setShowBulkModal(true)}
+            style={{ height: "40px", padding: "0 16px", background: "#F0F6FC", border: "1.5px solid #D0E8F5", borderRadius: "8px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", fontWeight: 600, color: "#2D6A9F", display: "flex", alignItems: "center", gap: "6px" }}
+          >
+            <Download size={14} /> Import/Export
+          </button>
+          <button style={{ height: "40px", padding: "0 18px", background: "#2D6A9F", border: "none", borderRadius: "8px", color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", fontWeight: 600 }}>
+            <Plus size={14} /> Add Item
+          </button>
+        </div>
+      </div>
         <button
           onClick={() => setShowLowOnly(!showLowOnly)}
           style={{ height: "40px", padding: "0 16px", background: showLowOnly ? "#FEF3C7" : "#FFFFFF", border: `1.5px solid ${showLowOnly ? "#F59E0B" : "#D0E8F5"}`, borderRadius: "8px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", fontWeight: 500, color: showLowOnly ? "#D97706" : "#5A7A96", display: "flex", alignItems: "center", gap: "6px" }}
@@ -218,6 +276,28 @@ export default function InventoryPage() {
           </div>
         </div>
       )}
+      {/* Modals */}
+      <StockAdjustmentModal
+        isOpen={showAdjustModal}
+        item={selectedItem}
+        onClose={() => setShowAdjustModal(false)}
+        onSave={handleAdjustmentSave}
+      />
+      <PurchaseOrderModal
+        isOpen={showPOModal}
+        suppliers={suppliers}
+        onClose={() => setShowPOModal(false)}
+        onSave={(po) => {
+          console.log("[v0] Purchase order created:", po);
+          setShowPOModal(false);
+        }}
+      />
+      <BulkImportExportModal
+        isOpen={showBulkModal}
+        onClose={() => setShowBulkModal(false)}
+        onImport={handleBulkImport}
+        onExport={handleBulkExport}
+      />
     </PageWrapper>
   );
 }
