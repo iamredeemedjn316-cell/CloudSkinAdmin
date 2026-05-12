@@ -61,7 +61,7 @@ export default function PackagesPage() {
         </select>
         <div style={{ flex: 1 }} />
         <button
-          onClick={() => navigate("/admin/packages/all")}
+          onClick={() => navigate("/admin/packages/add")}
           style={{
             height: "36px",
             padding: "0 16px",
@@ -78,7 +78,27 @@ export default function PackagesPage() {
             gap: "6px",
           }}
         >
-          <Plus size={16} /> View All
+          <Plus size={16} /> Add Package
+        </button>
+        <button
+          onClick={() => navigate("/admin/packages/all")}
+          style={{
+            height: "36px",
+            padding: "0 16px",
+            background: "#F0F6FC",
+            border: "1.5px solid #D0E8F5",
+            borderRadius: "8px",
+            color: "#2D6A9F",
+            fontFamily: "'DM Sans', sans-serif",
+            fontSize: "13px",
+            fontWeight: 600,
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+          }}
+        >
+          View All
         </button>
       </div>
 

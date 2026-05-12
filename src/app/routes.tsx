@@ -21,6 +21,7 @@ import ViewAllServicesPage from "./pages/admin/ViewAllServicesPage";
 import ServicesArchivePage from "./pages/admin/ServicesArchivePage";
 import PackagesPage from "./pages/admin/PackagesPage";
 import ViewAllPackagesPage from "./pages/admin/ViewAllPackagesPage";
+import AddPackagePage from "./pages/admin/AddPackagePage";
 import PackageDetailsPage from "./pages/admin/PackageDetailsPage";
 import PackagesArchivePage from "./pages/admin/PackagesArchivePage";
 import InventoryPage from "./pages/admin/InventoryPage";
@@ -68,6 +69,7 @@ export const router = createBrowserRouter([
       { path: "services-archive", element: <ServicesArchivePage /> },
       { path: "packages", element: <PackagesPage /> },
       { path: "packages/all", element: <ViewAllPackagesPage /> },
+      { path: "packages/add", element: <AddPackagePage /> },
       { path: "packages/:packageId", element: <PackageDetailsPage /> },
       { path: "packages-archive", element: <PackagesArchivePage /> },
       { path: "inventory", element: <InventoryPage /> },
