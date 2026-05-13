@@ -30,6 +30,10 @@ import LowStockPage from "./pages/admin/inventory/LowStockPage";
 import OkStockPage from "./pages/admin/inventory/OkStockPage";
 import VeryLowStockPage from "./pages/admin/inventory/VeryLowStockPage";
 import NoStockPage from "./pages/admin/inventory/NoStockPage";
+import SuppliersPage from "./pages/admin/inventory/SuppliersPage";
+import SupplierDetailPage from "./pages/admin/inventory/SupplierDetailPage";
+import SupplierTransactionDetailPage from "./pages/admin/inventory/SupplierTransactionDetailPage";
+import AuditLogsPage from "./pages/admin/inventory/AuditLogsPage";
 import VouchersPage from "./pages/admin/VouchersPage";
 import VoucherDetailsPage from "./pages/admin/VoucherDetailsPage";
 import ManageHomePage from "./pages/admin/website/ManageHomePage";
@@ -91,9 +95,11 @@ export const router = createBrowserRouter([
       { path: "inventory/low-stock", element: <LowStockPage /> },
       { path: "inventory/very-low-stock", element: <VeryLowStockPage /> },
       { path: "inventory/no-stock", element: <NoStockPage /> },
-      { path: "inventory/suppliers", element: <InventoryPage /> },
+      { path: "inventory/suppliers", element: <SuppliersPage /> },
+      { path: "inventory/suppliers/:supplierId", element: <SupplierDetailPage /> },
+      { path: "inventory/suppliers/:supplierId/transactions/:transactionId", element: <SupplierTransactionDetailPage /> },
       { path: "inventory/purchase-orders", element: <InventoryPage /> },
-      { path: "inventory/audit-logs", element: <InventoryPage /> },
+      { path: "inventory/audit-logs", element: <AuditLogsPage /> },
       { path: "vouchers", element: <VouchersPage /> },
       { path: "vouchers/:voucherId", element: <VoucherDetailsPage /> },
       { path: "website/home", element: <ManageHomePage /> },
